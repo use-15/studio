@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import ResourceCard from '@/components/ResourceCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Trash2, Edit3, X, GripVertical, LayoutGrid, List } from 'lucide-react';
+import { PlusCircle, Trash2, Edit3, X, GripVertical, LayoutGrid, List, KanbanSquare } from 'lucide-react';
 import type { Board } from '@/types';
 import { useBoardsContext } from '@/components/AppProviders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
