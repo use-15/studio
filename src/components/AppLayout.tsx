@@ -39,7 +39,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
-  { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare }, // Label updated to reflect content
+  { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare },
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
 ];
@@ -87,13 +87,17 @@ function MainSidebar() {
             <DropdownMenuContent side="top" align={isCollapsed ? "center" : "end"} className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <UserCircle className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <DropdownMenuItem asChild>
+                <Link href="/settings">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -120,6 +124,7 @@ function MainSidebar() {
               </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
+                {/* This would typically be a logout function call */}
                 <span>Log out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -167,7 +172,7 @@ function MobileSidebar() {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="w-full flex items-center justify-start gap-2 p-2">
                             <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://placehold.co/80x80/E5F5E0/228B22.png?text=BW" alt="Boss Willis" data-ai-hint="user avatar" />
+                            <AvatarImage src="https://placehold.co/80x80/E5F5E0/228B22.png?text=BW" alt="Boss Willis" data-ai-hint="user avatar"/>
                             <AvatarFallback>BW</AvatarFallback>
                             </Avatar>
                             <span className="font-medium">Boss Willis</span>
@@ -176,13 +181,17 @@ function MobileSidebar() {
                         <DropdownMenuContent side="top" align="start" className="w-56">
                           <DropdownMenuLabel>My Account</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <UserCircle className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
+                          <DropdownMenuItem asChild>
+                            <Link href="/profile">
+                                <UserCircle className="mr-2 h-4 w-4" />
+                                <span>Profile</span>
+                            </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
+                          <DropdownMenuItem asChild>
+                            <Link href="/settings">
+                                <Settings className="mr-2 h-4 w-4" />
+                                <span>Settings</span>
+                            </Link>
                           </DropdownMenuItem>
                            <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
@@ -209,6 +218,7 @@ function MobileSidebar() {
                           </DropdownMenuSub>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem>
+                             {/* This would typically be a logout function call */}
                             <span>Log out</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
