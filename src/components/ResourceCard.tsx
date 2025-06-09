@@ -3,8 +3,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, PlusCircle, Trash2, Edit3, MoreVertical, ExternalLink } from 'lucide-react';
-import type { WellnessResource, Board } from '@/types';
+import { PlusCircle, Trash2, MoreVertical, ExternalLink, BookOpen } from 'lucide-react';
+import type { WellnessResource } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -80,37 +80,40 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
     }
   };
 
+  const resourceLink = `/wellness-library/${resource.id}`;
+
   return (
     <Card className={cn("flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg", className)}>
       <CardHeader className="p-0 relative">
-        <Image
-          src={resource.imageUrl}
-          alt={resource.title}
-          width={600}
-          height={400}
-          className="w-full h-48 object-cover"
-          {...(resource['data-ai-hint'] ? { 'data-ai-hint': resource['data-ai-hint'] } : {})}
-        />
+        <Link href={resourceLink} passHref>
+          <Image
+            src={resource.imageUrl}
+            alt={resource.title}
+            width={600}
+            height={400}
+            className="w-full h-48 object-cover cursor-pointer"
+            {...(resource['data-ai-hint'] ? { 'data-ai-hint': resource['data-ai-hint'] } : {})}
+          />
+        </Link>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <div className="flex justify-between items-start mb-2">
           <Badge variant="secondary" className="mb-2 capitalize">{resource.category}</Badge>
           {resource.duration && <Badge variant="outline" className="text-xs">{resource.duration}</Badge>}
         </div>
-        <CardTitle className="text-lg font-headline mb-1 line-clamp-2">{resource.title}</CardTitle>
+        <Link href={resourceLink} passHref>
+          <CardTitle className="text-lg font-headline mb-1 line-clamp-2 hover:text-primary cursor-pointer">{resource.title}</CardTitle>
+        </Link>
         <CardDescription className="text-sm line-clamp-3 mb-3">{resource.description}</CardDescription>
       </CardContent>
       <CardFooter className="p-4 flex justify-between items-center border-t">
-        {resource.contentUrl && resource.contentUrl !== '#' ? (
-          <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
-            <Link href={resource.contentUrl} target="_blank" rel="noopener noreferrer">
-              Learn More <ExternalLink className="ml-1 h-3 w-3" />
-            </Link>
-          </Button>
-        ) : (
-          <div /> 
-        )}
-
+        <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
+          <Link href={resourceLink}>
+            {resource.type === 'article' || resource.type === 'tip' ? 'Read More' : 'View Resource'}
+            <BookOpen className="ml-1 h-3 w-3" />
+          </Link>
+        </Button>
+        
         {(showAddToBoard || showRemoveFromBoard) && (
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -136,8 +139,8 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onSelect={(e) => {
-                        e.preventDefault(); // Prevent DropdownMenu from closing
-                        setIsCreateBoardDialogOpen(true); // Open the Dialog
+                        e.preventDefault(); 
+                        setIsCreateBoardDialogOpen(true); 
                       }}
                     >
                       <PlusCircle className="mr-2 h-4 w-4" /> Create New Board
@@ -151,8 +154,17 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
                   <span>Remove from this board</span>
                 </DropdownMenuItem>
               )}
-              {/* Example other actions */}
-              {/* <DropdownMenuItem><Heart className="mr-2 h-4 w-4" /><span>Favorite</span></DropdownMenuItem> */}
+              {resource.contentUrl && resource.contentUrl !== '#' && resource.type !== 'article' && resource.type !== 'video' && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <a href={resource.contentUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Open Original Source
+                    </a>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

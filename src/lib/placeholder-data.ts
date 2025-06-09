@@ -1,3 +1,4 @@
+
 import type { WellnessResource, Hospital, Doctor, Service } from '@/types';
 
 export const curatedWellnessResources: WellnessResource[] = [
@@ -8,9 +9,30 @@ export const curatedWellnessResources: WellnessResource[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     category: 'Mindfulness',
     type: 'article',
-    contentUrl: '#',
+    contentUrl: '#', // Could be a link to an external source if not fully embedded
     duration: '10 min read',
     'data-ai-hint': 'meditation peace',
+    contentMarkdown: `
+# A Beginner's Guide to Meditation
+
+Meditation is a practice where an individual uses a technique – such as mindfulness, or focusing the mind on a particular object, thought, or activity – to train attention and awareness, and achieve a mentally clear and emotionally calm and stable state.
+
+## Why Meditate?
+
+*   Reduce stress
+*   Control anxiety
+*   Promote emotional health
+*   Enhance self-awareness
+*   Lengthen attention span
+
+## Simple Meditation Exercise:
+
+1.  **Find a quiet place.** Sit or lie down comfortably.
+2.  **Close your eyes.**
+3.  **Breathe naturally.** Focus on your breath and how your body moves with each inhalation and exhalation.
+4.  **Notice your thoughts.** If your mind wanders, gently return your focus to your breath.
+5.  **Start small.** Begin with just 5-10 minutes a day.
+    `,
   },
   {
     id: 'CWR002',
@@ -22,6 +44,22 @@ export const curatedWellnessResources: WellnessResource[] = [
     contentUrl: '#',
     duration: '15 min read',
     'data-ai-hint': 'healthy food',
+    contentMarkdown: `
+# 10 Quick & Healthy Breakfast Ideas
+
+Starting your day with a nutritious breakfast can set the tone for better choices throughout the day. Here are some quick and healthy ideas:
+
+1.  **Overnight Oats:** Combine oats, milk (or yogurt), chia seeds, and your favorite fruits in a jar. Refrigerate overnight.
+2.  **Avocado Toast:** Whole-grain toast topped with mashed avocado, a sprinkle of salt, pepper, and red pepper flakes.
+3.  **Greek Yogurt with Berries:** High in protein and antioxidants. Add a drizzle of honey or a sprinkle of nuts.
+4.  **Smoothie:** Blend fruits, vegetables (like spinach), protein powder, and a liquid base (water, milk, or yogurt).
+5.  **Scrambled Eggs with Spinach:** A protein-packed classic.
+6.  **Fruit Salad with Cottage Cheese:** A refreshing and light option.
+7.  **Whole-Wheat Muffin with Peanut Butter:** Choose muffins low in sugar.
+8.  **Quinoa Porridge:** A warm and hearty alternative to oatmeal.
+9.  **Breakfast Burrito (mini):** Scrambled eggs, black beans, and salsa in a small whole-wheat tortilla.
+10. **Hard-Boiled Eggs and an Apple:** Simple, portable, and balanced.
+    `,
   },
   {
     id: 'CWR003',
@@ -30,7 +68,8 @@ export const curatedWellnessResources: WellnessResource[] = [
     imageUrl: 'https://placehold.co/600x400.png',
     category: 'Fitness',
     type: 'video',
-    contentUrl: '#',
+    contentUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Example original URL
+    youtubeVideoId: 'dQw4w9WgXcQ', // Rick Astley for placeholder
     duration: '15 min video',
     'data-ai-hint': 'yoga park',
   },
@@ -44,6 +83,26 @@ export const curatedWellnessResources: WellnessResource[] = [
     contentUrl: '#',
     duration: '12 min read',
     'data-ai-hint': 'sleep wellness',
+    contentMarkdown: `
+# The Importance of Sleep for Wellbeing
+
+Sleep is a fundamental human need, like eating, drinking, and breathing. It is vital for good health and well-being throughout your lifetime.
+
+## Why is Sleep Important?
+Quality sleep can help protect your mental health, physical health, quality of life, and safety.
+
+*   **Brain Function:** Sleep helps your brain work properly. While you're sleeping, your brain is preparing for the next day. It's forming new pathways to help you learn and remember information.
+*   **Emotional Well-being:** Sleep can affect mood. Sleep deficiency may lead to problems with decision-making, problem-solving, controlling emotions and behavior, and coping with change.
+*   **Physical Health:** Sleep plays an important role in your physical health. For example, sleep is involved in healing and repair of your heart and blood vessels. Ongoing sleep deficiency is linked to an increased risk of heart disease, kidney disease, high blood pressure, diabetes, and stroke.
+*   **Daytime Performance and Safety:** Getting enough quality sleep at the right times helps you function well throughout the day. People who are sleep deficient are less productive at work and school.
+
+## Tips for Better Sleep
+*   Stick to a sleep schedule.
+*   Create a restful environment.
+*   Limit daytime naps.
+*   Include physical activity in your daily routine.
+*   Manage worries.
+    `
   },
   {
     id: 'CWR005',
@@ -51,8 +110,8 @@ export const curatedWellnessResources: WellnessResource[] = [
     description: 'A short audio guide to practice deep breathing for stress relief.',
     imageUrl: 'https://placehold.co/600x400.png',
     category: 'Mindfulness',
-    type: 'audio',
-    contentUrl: '#',
+    type: 'audio', // For now, audio will just be displayed as a resource, not playable in-app without more work
+    contentUrl: '#', // Placeholder for audio file URL
     duration: '5 min audio',
     'data-ai-hint': 'breathing calm',
   },
@@ -66,6 +125,35 @@ export const curatedWellnessResources: WellnessResource[] = [
     contentUrl: '#',
     duration: '8 min read',
     'data-ai-hint': 'water health',
+    contentMarkdown: `
+# Understanding Hydration: The Importance of Water
+
+Water is essential for life. Every cell, tissue, and organ in your body needs water to work correctly. For example, your body uses water to maintain its temperature, remove waste, and lubricate joints. Water is needed for overall good health.
+
+## Why is Hydration Important?
+
+*   **Regulates Body Temperature:** Sweating helps cool your body, but you need to replenish the lost fluids.
+*   **Transports Nutrients:** Water helps dissolve minerals and nutrients, making them more accessible to the body. It also helps carry nutrients and oxygen to cells.
+*   **Flushes Waste Products:** Adequate water intake enables your body to excrete waste through perspiration, urination, and defecation.
+*   **Lubricates Joints:** Cartilage, found in joints and the disks of the spine, contains around 80 percent water. Long-term dehydration can reduce the joints’ shock-absorbing ability, leading to joint pain.
+*   **Supports Digestion:** Water helps break down the food you eat, allowing its nutrients to be absorbed by your body.
+
+## How Much Water Do You Need?
+
+The amount of water you need depends on various factors, including your health, activity level, and where you live. A common recommendation is to drink eight 8-ounce glasses of water a day, which equals about 2 liters, or half a gallon. This is the "8x8 rule" and is easy to remember.
+
+## Signs of Dehydration:
+
+*   Little or no urine, or urine that is darker than usual
+*   Dry mouth
+*   Sleepiness or fatigue
+*   Extreme thirst
+*   Headache
+*   Confusion
+*   Dizziness or lightheadedness
+
+Stay hydrated!
+    `
   },
 ];
 

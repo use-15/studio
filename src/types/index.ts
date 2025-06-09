@@ -1,3 +1,4 @@
+
 export interface WellnessResource {
   id: string;
   title: string;
@@ -5,9 +6,11 @@ export interface WellnessResource {
   imageUrl: string;
   category: string; // e.g., 'Mindfulness', 'Nutrition', 'Fitness', 'Article'
   type: 'article' | 'video' | 'audio' | 'link' | 'tip';
-  contentUrl?: string; // Link to the full resource
+  contentUrl?: string; // Link to the full resource OR original source for videos
   duration?: string; // e.g., "10 min read", "15 min video"
   'data-ai-hint'?: string;
+  contentMarkdown?: string; // For full article content
+  youtubeVideoId?: string; // For YouTube videos
 }
 
 export interface Board {
@@ -47,4 +50,13 @@ export interface Hospital {
   'data-ai-hint'?: string;
   phone?: string;
   website?: string;
+}
+
+export interface Review {
+  id: string;
+  resourceId: string;
+  userName: string;
+  rating: number; // 1-5
+  comment: string;
+  timestamp: string; // ISO date string
 }
