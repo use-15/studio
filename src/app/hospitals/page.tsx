@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Hospital as HospitalIcon, UserMd, Stethoscope, MapPin, Phone, Globe, Search, Loader2, Lightbulb, Building } from 'lucide-react';
+import { Hospital as HospitalIcon, User, Stethoscope, MapPin, Phone, Globe, Search, Loader2, Lightbulb, Building } from 'lucide-react';
 import { getHospitalSuggestions, HospitalSuggestionInputSchema, type HospitalSuggestionInput, type HospitalSuggestionOutput } from '@/ai/flows/hospital-suggestion-flow';
 import { hospitalData } from '@/lib/placeholder-data';
 import type { Hospital, Doctor, Service } from '@/types';
@@ -235,7 +235,7 @@ export default function HospitalsPage() {
                       )}
                       {suggestion.suggestedDoctorName && (
                         <p className="text-sm text-muted-foreground flex items-center">
-                           <UserMd className="h-3 w-3 mr-1.5"/> Consider Dr. {suggestion.suggestedDoctorName}
+                           <User className="h-3 w-3 mr-1.5"/> Consider Dr. {suggestion.suggestedDoctorName}
                         </p>
                       )}
                       <p className="text-sm mt-1">{suggestion.reason}</p>
@@ -285,3 +285,4 @@ export default function HospitalsPage() {
     </AppLayout>
   );
 }
+
