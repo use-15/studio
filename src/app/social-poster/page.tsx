@@ -43,6 +43,8 @@ export default function SocialPosterPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const formElement = event.currentTarget; // Store currentTarget before any await
+
     if (!postText && !mediaFile) {
       toast({
         title: "Cannot create empty post",
@@ -73,8 +75,9 @@ export default function SocialPosterPage() {
     setMediaFile(null);
     setMediaPreview(null);
     setMediaType(null);
-    // A common pattern is to reset the file input value as well
-    const fileInput = event.currentTarget.querySelector('input[type="file"]') as HTMLInputElement;
+    
+    // Use the stored formElement to find the input
+    const fileInput = formElement.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }
@@ -260,3 +263,4 @@ const AvatarFallback: React.FC<{className?: string, children: React.ReactNode}> 
     {children}
   </div>
 );
+
