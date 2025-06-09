@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { LeafIcon } from '@/components/Logo';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/types';
 import { aiHealthChatbot } from '@/ai/flows/ai-health-chatbot';
@@ -82,7 +83,7 @@ export default function ChatInterface() {
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] max-h-[700px] bg-card shadow-xl rounded-lg border">
       <header className="p-4 border-b flex items-center">
-        <Bot className="h-6 w-6 text-primary mr-2" />
+        <LeafIcon className="h-6 w-6 text-primary mr-2" />
         <h2 className="text-lg font-semibold font-headline">AI Health Assistant</h2>
       </header>
       <ScrollArea className="flex-grow p-4 space-y-4" ref={scrollAreaRef}>
