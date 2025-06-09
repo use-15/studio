@@ -10,13 +10,25 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Facebook, Instagram, Image as ImageIcon, VideoIcon, ThumbsUp, MessageSquare, Share2 as ShareIcon, UserCircle, Loader2, Send } from 'lucide-react';
+import { 
+  Facebook, 
+  Instagram, 
+  Image as ImageIcon, 
+  VideoIcon, 
+  UserCircle, 
+  Loader2, 
+  Send,
+  Heart,
+  MessageCircle,
+  Bookmark,
+  MoreHorizontal
+} from 'lucide-react';
 import Image from 'next/image';
 
 type Platform = 'facebook' | 'instagram';
 
 export default function SocialPosterPage() {
-  const [platform, setPlatform] = useState<Platform>('facebook');
+  const [platform, setPlatform] = useState<Platform>('instagram'); // Default to Instagram for the new UI
   const [postText, setPostText] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
@@ -43,7 +55,7 @@ export default function SocialPosterPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formElement = event.currentTarget; // Store currentTarget before any await
+    const formElement = event.currentTarget; 
 
     if (!postText && !mediaFile) {
       toast({
@@ -55,7 +67,6 @@ export default function SocialPosterPage() {
     }
 
     setIsPosting(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     console.log({
@@ -70,13 +81,11 @@ export default function SocialPosterPage() {
       description: `Your post for ${platform} has been created.`,
     });
 
-    // Reset form
     setPostText('');
     setMediaFile(null);
     setMediaPreview(null);
     setMediaType(null);
     
-    // Use the stored formElement to find the input
     const fileInput = formElement.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -84,8 +93,6 @@ export default function SocialPosterPage() {
     setIsPosting(false);
   };
   
-  const PlatformIcon = platform === 'facebook' ? Facebook : Instagram;
-
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -113,7 +120,7 @@ export default function SocialPosterPage() {
                 <div>
                   <Label htmlFor="platform" className="text-base font-medium">Platform</Label>
                   <RadioGroup
-                    defaultValue="facebook"
+                    value={platform}
                     onValueChange={(value: Platform) => setPlatform(value)}
                     className="flex space-x-4 mt-2"
                     id="platform"
@@ -170,73 +177,68 @@ export default function SocialPosterPage() {
             </CardContent>
           </Card>
 
-          {/* Preview Card */}
-          <Card className="shadow-lg sticky top-24">
-            <CardHeader className="border-b">
-              <CardTitle className="flex items-center gap-2">
-                <PlatformIcon className={`h-6 w-6 ${platform === 'facebook' ? 'text-[#1877F2]' : 'text-[#E4405F]'}`} />
-                Post Preview
+          {/* Preview Card - Instagram Style */}
+          <Card className="shadow-lg sticky top-24 bg-neutral-900 text-white border-neutral-700">
+            <CardHeader className="border-b border-neutral-700">
+              <CardTitle className="text-white">
+                Post Preview (Instagram Style)
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="bg-background p-4 rounded-lg border space-y-3">
-                {/* User Info */}
-                <div className="flex items-center space-x-2">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="https://placehold.co/40x40.png" alt="User Avatar" data-ai-hint="user avatar" />
-                    <AvatarFallback>AW</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-sm">Aramiyot Wellness</p>
-                    <p className="text-xs text-muted-foreground">Just now · Public</p>
+            <CardContent className="p-0"> {/* Remove padding to let inner div control it */}
+              <div className="w-full max-w-md mx-auto bg-black rounded-b-lg overflow-hidden"> {/* Simulating phone screen portion */}
+                {/* Post Header */}
+                <div className="flex items-center justify-between p-3">
+                  <div className="flex items-center space-x-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="https://placehold.co/40x40/ffffff/000000.png?text=AW" alt="User Avatar" data-ai-hint="user avatar" />
+                      <AvatarFallback className="bg-neutral-700 text-white">AW</AvatarFallback>
+                    </Avatar>
+                    <span className="font-semibold text-sm">Aramiyot Wellness</span>
                   </div>
+                  <MoreHorizontal className="h-5 w-5 text-neutral-400" />
                 </div>
 
-                {/* Post Text */}
-                {postText && (
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                    {postText || "Your post content will appear here..."}
-                  </p>
-                )}
-                {!postText && !mediaPreview && (
-                   <p className="text-sm text-muted-foreground italic">
-                    Your post content will appear here...
-                  </p>
-                )}
-
-
                 {/* Media Preview */}
-                {mediaPreview && mediaType === 'image' && (
-                  <div className="mt-2 rounded-md overflow-hidden border">
-                    <Image src={mediaPreview} alt="Media preview" width={600} height={400} className="w-full object-cover aspect-video" />
-                  </div>
-                )}
-                {mediaPreview && mediaType === 'video' && (
-                  <div className="mt-2 rounded-md overflow-hidden border">
-                    <video src={mediaPreview} controls className="w-full aspect-video bg-muted" />
-                  </div>
-                )}
-                {!mediaPreview && (
-                  <div className="mt-2 rounded-md overflow-hidden border bg-muted flex items-center justify-center aspect-video">
-                     <ImageIcon className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                )}
+                <div className="bg-black">
+                  {mediaPreview && mediaType === 'image' && (
+                    <Image src={mediaPreview} alt="Media preview" width={480} height={480} className="w-full h-auto object-contain max-h-[500px]" />
+                  )}
+                  {mediaPreview && mediaType === 'video' && (
+                    <video src={mediaPreview} controls className="w-full h-auto max-h-[500px] bg-black" />
+                  )}
+                  {!mediaPreview && (
+                    <div className="w-full aspect-square bg-neutral-800 flex items-center justify-center">
+                       <ImageIcon className="h-16 w-16 text-neutral-500" />
+                    </div>
+                  )}
+                </div>
                 
-                {/* Action Bar Placeholder */}
-                <div className="flex justify-around items-center pt-3 mt-3 border-t text-muted-foreground">
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-xs">
-                    <ThumbsUp className="h-4 w-4" /> Like
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-xs">
-                    <MessageSquare className="h-4 w-4" /> Comment
-                  </Button>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1.5 text-xs">
-                    <ShareIcon className="h-4 w-4" /> Share
-                  </Button>
+                {/* Actions & Post Info */}
+                <div className="p-3 space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-4">
+                      <Heart className="h-6 w-6 hover:text-red-500 cursor-pointer" />
+                      <MessageCircle className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                      <Send className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                    </div>
+                    <Bookmark className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                  </div>
+
+                  <p className="font-semibold">1,234 likes</p>
+                  
+                  {(postText || (!postText && !mediaPreview)) && (
+                    <div className="whitespace-pre-wrap">
+                      <span className="font-semibold">Aramiyot Wellness</span>{' '}
+                      {postText || (!mediaPreview ? <span className="text-neutral-500 italic">Your post content will appear here...</span> : '')}
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-neutral-500 cursor-pointer hover:underline">View all 42 comments</p>
+                  <p className="text-xs text-neutral-500">1 DAY AGO</p>
                 </div>
               </div>
             </CardContent>
-             <CardFooter className="text-xs text-muted-foreground">
+             <CardFooter className="text-xs text-neutral-400 border-t border-neutral-700 pt-3">
                 This is a simulated preview. Actual appearance may vary on the platform.
             </CardFooter>
           </Card>
@@ -246,8 +248,7 @@ export default function SocialPosterPage() {
   );
 }
 
-// Minimal Avatar component for preview to avoid circular dependencies if needed
-// For this app structure, direct import from ui/avatar is fine.
+// Minimal Avatar component for preview
 const Avatar: React.FC<{className?: string, children: React.ReactNode}> = ({className, children}) => (
   <div className={`relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ${className}`}>
     {children}
