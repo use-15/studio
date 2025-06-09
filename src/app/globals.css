@@ -56,7 +56,6 @@ body {
   }
 
   .dark {
-    /* Keeping default dark theme for now, can be customized later if needed */
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
@@ -91,6 +90,7 @@ body {
     --chart-4: 43 70% 60%;
     --chart-5: 120 20% 75%;
 
+    /* Sidebar specific variables for dark mode */
     --sidebar-background: 222 47% 9%; /* Darker base for sidebar */
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 120 60% 45%;
