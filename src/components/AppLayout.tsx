@@ -39,7 +39,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
-  { href: '/my-boards', label: 'My Boards', icon: KanbanSquare },
+  { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare }, // Label updated to reflect content
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
 ];
@@ -78,10 +78,10 @@ function MainSidebar() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'} gap-2 p-2`}>
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                  <AvatarFallback>AW</AvatarFallback>
+                  <AvatarImage src="https://placehold.co/80x80/E5F5E0/228B22.png?text=BW" alt="Boss Willis" data-ai-hint="user avatar" />
+                  <AvatarFallback>BW</AvatarFallback>
                 </Avatar>
-                {!isCollapsed && <span className="font-medium">User Name</span>}
+                {!isCollapsed && <span className="font-medium">Boss Willis</span>}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" align={isCollapsed ? "center" : "end"} className="w-56">
@@ -167,10 +167,10 @@ function MobileSidebar() {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="w-full flex items-center justify-start gap-2 p-2">
                             <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                            <AvatarFallback>AW</AvatarFallback>
+                            <AvatarImage src="https://placehold.co/80x80/E5F5E0/228B22.png?text=BW" alt="Boss Willis" data-ai-hint="user avatar" />
+                            <AvatarFallback>BW</AvatarFallback>
                             </Avatar>
-                            <span className="font-medium">User Name</span>
+                            <span className="font-medium">Boss Willis</span>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="top" align="start" className="w-56">
