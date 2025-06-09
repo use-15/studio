@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -17,7 +18,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -134,11 +134,14 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
                        <DropdownMenuItem disabled>No boards yet</DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DialogTrigger asChild onSelect={(e) => e.preventDefault()}>
-                       <DropdownMenuItem onClick={() => setIsCreateBoardDialogOpen(true)}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Create New Board
-                      </DropdownMenuItem>
-                    </DialogTrigger>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault(); // Prevent DropdownMenu from closing
+                        setIsCreateBoardDialogOpen(true); // Open the Dialog
+                      }}
+                    >
+                      <PlusCircle className="mr-2 h-4 w-4" /> Create New Board
+                    </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
               )}
