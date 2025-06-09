@@ -8,7 +8,7 @@ import { curatedWellnessResources } from '@/lib/placeholder-data';
 import type { WellnessResource } from '@/types';
 import { getPersonalizedRecommendations } from '@/ai/flows/personalized-recommendations';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, BookOpen, UserCheck, Box } from 'lucide-react'; // Changed Cube to Box
+import { ArrowRight, Sparkles, BookOpen, UserCheck, Box } from 'lucide-react'; 
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,7 +49,7 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative py-12 md:py-20 lg:py-28 bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl overflow-hidden text-center">
           <div className="absolute inset-0 opacity-10">
-             <Image src="https://placehold.co/1600x900.png" alt="Abstract wellness background" layout="fill" objectFit="cover" data-ai-hint="wellness serene" priority />
+             <Image src="https://placehold.co/1600x900.png" alt="Background image of people gathering" layout="fill" objectFit="cover" data-ai-hint="people gathering" priority />
           </div>
           <div className="relative z-10 container mx-auto px-4">
             {/* <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" /> Removed Sparkles icon */}
