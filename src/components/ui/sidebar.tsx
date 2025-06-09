@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -129,6 +130,10 @@ const SidebarProvider = React.forwardRef<
       [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
     )
 
+    // Destructure specific provider props to avoid spreading them to the DOM element
+    const { defaultOpen: _defaultOpenIgnored, open: _openIgnored, onOpenChange: _onOpenChangeIgnored, ...restProviderProps } = props;
+
+
     return (
       <SidebarContext.Provider value={contextValue}>
         <TooltipProvider delayDuration={0}>
@@ -145,7 +150,7 @@ const SidebarProvider = React.forwardRef<
               className
             )}
             ref={ref}
-            {...props}
+            {...restProviderProps}
           >
             {children}
           </div>
@@ -156,14 +161,14 @@ const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
-const Sidebar = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    side?: "left" | "right"
-    variant?: "sidebar" | "floating" | "inset"
-    collapsible?: "offcanvas" | "icon" | "none"
-  }
->(
+type SidebarComponentProps = React.ComponentProps<"div"> & {
+  side?: "left" | "right";
+  variant?: "sidebar" | "floating" | "inset";
+  collapsible?: "offcanvas" | "icon" | "none";
+  defaultOpen?: boolean; // Added to destructure and prevent spread
+};
+
+const Sidebar = React.forwardRef<HTMLDivElement, SidebarComponentProps>(
   (
     {
       side = "left",
@@ -171,7 +176,8 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
-      ...props
+      defaultOpen, // Destructure defaultOpen
+      ...rest // Use 'rest' for actual DOM attributes
     },
     ref
   ) => {
@@ -185,7 +191,7 @@ const Sidebar = React.forwardRef<
             className
           )}
           ref={ref}
-          {...props}
+          {...rest}
         >
           {children}
         </div>
@@ -194,7 +200,7 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...rest}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
@@ -244,7 +250,7 @@ const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
-          {...props}
+          {...rest}
         >
           <div
             data-sidebar="sidebar"
