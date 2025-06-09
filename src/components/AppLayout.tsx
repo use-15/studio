@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import {
   Home,
   LibraryBig,
@@ -13,7 +14,9 @@ import {
   UserCircle,
   PanelLeft,
   Headphones,
-  // Share2, // Removed Share2 icon as Social Poster is removed
+  Sun,
+  Moon,
+  Laptop,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -30,7 +33,7 @@ import {
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navItems = [
@@ -39,13 +42,13 @@ const navItems = [
   { href: '/my-boards', label: 'My Boards', icon: KanbanSquare },
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
-  // { href: '/social-poster', label: 'Social Poster', icon: Share2 }, // Removed Social Poster
 ];
 
 function MainSidebar() {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
+  const { setTheme } = useTheme();
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
@@ -92,6 +95,29 @@ function MainSidebar() {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span>Toggle theme</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => setTheme('light')}>
+                      <Sun className="mr-2 h-4 w-4" />
+                      <span>Light</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme('dark')}>
+                      <Moon className="mr-2 h-4 w-4" />
+                      <span>Dark</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme('system')}>
+                      <Laptop className="mr-2 h-4 w-4" />
+                      <span>System</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <span>Log out</span>
@@ -105,6 +131,7 @@ function MainSidebar() {
 
 function MobileSidebar() {
     const pathname = usePathname();
+    const { setTheme } = useTheme();
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -136,13 +163,56 @@ function MobileSidebar() {
                   </SidebarMenu>
                 </SidebarContent>
                  <SidebarFooter className="p-2 border-t border-sidebar-border">
-                     <Button variant="ghost" className="w-full flex items-center justify-start gap-2 p-2">
-                        <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                        <AvatarFallback>AW</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">User Name</span>
-                    </Button>
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="w-full flex items-center justify-start gap-2 p-2">
+                            <Avatar className="h-8 w-8">
+                            <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
+                            <AvatarFallback>AW</AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">User Name</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="start" className="w-56">
+                          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <UserCircle className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Settings</span>
+                          </DropdownMenuItem>
+                           <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                              <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                              <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                              <span>Toggle theme</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                              <DropdownMenuSubContent>
+                                <DropdownMenuItem onClick={() => setTheme('light')}>
+                                  <Sun className="mr-2 h-4 w-4" />
+                                  <span>Light</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                  <Moon className="mr-2 h-4 w-4" />
+                                  <span>Dark</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme('system')}>
+                                  <Laptop className="mr-2 h-4 w-4" />
+                                  <span>System</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                          </DropdownMenuSub>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <span>Log out</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                 </SidebarFooter>
             </SheetContent>
         </Sheet>

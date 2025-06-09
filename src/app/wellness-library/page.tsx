@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -38,7 +39,7 @@ export default function WellnessLibraryPage() {
     <AppLayout>
       <div className="space-y-8">
         <header className="pb-6 border-b">
-          <h1 className="text-4xl font-bold font-headline text-primary">Wellness Library</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold font-headline text-primary">Wellness Library</h1>
           <p className="text-lg text-muted-foreground mt-2">
             Explore a rich collection of articles, videos, and tips to support your wellbeing.
           </p>

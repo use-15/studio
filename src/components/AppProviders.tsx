@@ -1,7 +1,9 @@
+
 "use client";
 
 import React from 'react';
 import { useBoards, type useBoards as UseBoardsType } from '@/hooks/useBoards'; // Correctly import the hook and its type
+import { ThemeProvider } from 'next-themes';
 
 type BoardsContextType = ReturnType<UseBoardsType> | null;
 
@@ -11,9 +13,11 @@ export default function AppProviders({ children }: { children: React.ReactNode }
   const boardsApi = useBoards();
 
   return (
-    <BoardsContext.Provider value={boardsApi}>
-      {children}
-    </BoardsContext.Provider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <BoardsContext.Provider value={boardsApi}>
+        {children}
+      </BoardsContext.Provider>
+    </ThemeProvider>
   );
 }
 

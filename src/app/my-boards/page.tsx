@@ -329,7 +329,7 @@ export default function DashboardPage() {
     <AppLayout>
       <div className="space-y-8">
         <header className="pb-6 border-b">
-          <h1 className="text-4xl font-bold font-headline text-primary">Health Dashboard</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold font-headline text-primary">Health Dashboard</h1>
           <p className="text-lg text-muted-foreground mt-2">
             Your personal overview of health metrics, notifications, and advice.
           </p>
@@ -355,4 +355,3 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
-

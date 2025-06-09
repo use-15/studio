@@ -15,7 +15,7 @@ export default function AudioSummariesPage() {
           <div className="flex items-center space-x-3">
             <Headphones className="h-10 w-10 text-primary" />
             <div>
-              <h1 className="text-4xl font-bold font-headline text-primary">Audio Book Summaries</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold font-headline text-primary">Audio Book Summaries</h1>
               <p className="text-lg text-muted-foreground mt-1">
                 Listen to key insights from popular books to learn on the go.
               </p>
