@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -51,7 +52,7 @@ function MainSidebar() {
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <Link href={item.href} passHref legacyBehavior>
+              <Link href={item.href}>
                 <SidebarMenuButton
                   isActive={pathname === item.href}
                   tooltip={item.label}
@@ -116,7 +117,7 @@ function MobileSidebar() {
                   <SidebarMenu>
                     {navItems.map((item) => (
                       <SidebarMenuItem key={item.label}>
-                        <Link href={item.href} passHref legacyBehavior>
+                        <Link href={item.href}>
                           <SidebarMenuButton
                             isActive={pathname === item.href}
                             aria-label={item.label}
