@@ -12,7 +12,8 @@ import {
   Settings,
   UserCircle,
   PanelLeft,
-  Headphones, // Added Headphones icon
+  Headphones,
+  Share2, // Added Share2 icon
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -36,8 +37,9 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
   { href: '/my-boards', label: 'My Boards', icon: KanbanSquare },
-  { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones }, // Added new nav item
+  { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
+  { href: '/social-poster', label: 'Social Poster', icon: Share2 }, // New navigation item
 ];
 
 function MainSidebar() {
