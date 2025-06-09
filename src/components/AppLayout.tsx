@@ -12,6 +12,7 @@ import {
   Settings,
   UserCircle,
   PanelLeft,
+  Headphones, // Added Headphones icon
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -35,6 +36,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
   { href: '/my-boards', label: 'My Boards', icon: KanbanSquare },
+  { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones }, // Added new nav item
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
 ];
 
@@ -44,7 +46,7 @@ function MainSidebar() {
   const isCollapsed = state === 'collapsed';
 
   return (
-    <Sidebar variant="sidebar" collapsible="icon" defaultOpen={true}>
+    <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader>
         <Logo collapsed={isCollapsed} />
       </SidebarHeader>
