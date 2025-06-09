@@ -20,15 +20,20 @@ import {
   Send,
   Heart,
   MessageCircle,
+  MessageSquare, // For Facebook comment
   Bookmark,
-  MoreHorizontal
+  MoreHorizontal,
+  ThumbsUp,
+  Share2,
+  Globe
 } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 type Platform = 'facebook' | 'instagram';
 
 export default function SocialPosterPage() {
-  const [platform, setPlatform] = useState<Platform>('instagram'); // Default to Instagram for the new UI
+  const [platform, setPlatform] = useState<Platform>('instagram');
   const [postText, setPostText] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
@@ -86,9 +91,11 @@ export default function SocialPosterPage() {
     setMediaPreview(null);
     setMediaType(null);
     
-    const fileInput = formElement.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+    if (formElement) {
+      const fileInput = formElement.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
     setIsPosting(false);
   };
@@ -177,68 +184,132 @@ export default function SocialPosterPage() {
             </CardContent>
           </Card>
 
-          {/* Preview Card - Instagram Style */}
-          <Card className="shadow-lg sticky top-24 bg-neutral-900 text-white border-neutral-700">
-            <CardHeader className="border-b border-neutral-700">
-              <CardTitle className="text-white">
-                Post Preview (Instagram Style)
+          {/* Preview Card */}
+          <Card className={cn(
+            "shadow-lg sticky top-24",
+            platform === 'instagram' ? "bg-neutral-900 text-white border-neutral-700" : "bg-card text-card-foreground"
+          )}>
+            <CardHeader className={cn(
+              "border-b",
+              platform === 'instagram' ? "border-neutral-700" : "border-border"
+            )}>
+              <CardTitle className={cn(
+                platform === 'instagram' ? "text-white" : "text-card-foreground"
+              )}>
+                Post Preview ({platform === 'instagram' ? 'Instagram' : 'Facebook'} Style)
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0"> {/* Remove padding to let inner div control it */}
-              <div className="w-full max-w-md mx-auto bg-black rounded-b-lg overflow-hidden"> {/* Simulating phone screen portion */}
-                {/* Post Header */}
-                <div className="flex items-center justify-between p-3">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="https://placehold.co/40x40/ffffff/000000.png?text=AW" alt="User Avatar" data-ai-hint="user avatar" />
-                      <AvatarFallback className="bg-neutral-700 text-white">AW</AvatarFallback>
-                    </Avatar>
-                    <span className="font-semibold text-sm">Aramiyot Wellness</span>
-                  </div>
-                  <MoreHorizontal className="h-5 w-5 text-neutral-400" />
-                </div>
-
-                {/* Media Preview */}
-                <div className="bg-black">
-                  {mediaPreview && mediaType === 'image' && (
-                    <Image src={mediaPreview} alt="Media preview" width={480} height={480} className="w-full h-auto object-contain max-h-[500px]" />
-                  )}
-                  {mediaPreview && mediaType === 'video' && (
-                    <video src={mediaPreview} controls className="w-full h-auto max-h-[500px] bg-black" />
-                  )}
-                  {!mediaPreview && (
-                    <div className="w-full aspect-square bg-neutral-800 flex items-center justify-center">
-                       <ImageIcon className="h-16 w-16 text-neutral-500" />
+            
+            {platform === 'instagram' && (
+              <CardContent className="p-0">
+                <div className="w-full max-w-md mx-auto bg-black rounded-b-lg overflow-hidden">
+                  <div className="flex items-center justify-between p-3">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src="https://placehold.co/40x40/ffffff/000000.png?text=AW" alt="User Avatar" data-ai-hint="user avatar" />
+                        <AvatarFallback className="bg-neutral-700 text-white">AW</AvatarFallback>
+                      </Avatar>
+                      <span className="font-semibold text-sm">Aramiyot Wellness</span>
                     </div>
-                  )}
-                </div>
-                
-                {/* Actions & Post Info */}
-                <div className="p-3 space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-4">
-                      <Heart className="h-6 w-6 hover:text-red-500 cursor-pointer" />
-                      <MessageCircle className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
-                      <Send className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
-                    </div>
-                    <Bookmark className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                    <MoreHorizontal className="h-5 w-5 text-neutral-400" />
                   </div>
 
-                  <p className="font-semibold">1,234 likes</p>
+                  <div className="bg-black">
+                    {mediaPreview && mediaType === 'image' && (
+                      <Image src={mediaPreview} alt="Media preview" width={480} height={480} className="w-full h-auto object-contain max-h-[500px]" />
+                    )}
+                    {mediaPreview && mediaType === 'video' && (
+                      <video src={mediaPreview} controls className="w-full h-auto max-h-[500px] bg-black" />
+                    )}
+                    {!mediaPreview && (
+                      <div className="w-full aspect-square bg-neutral-800 flex items-center justify-center">
+                         <ImageIcon className="h-16 w-16 text-neutral-500" />
+                      </div>
+                    )}
+                  </div>
                   
-                  {(postText || (!postText && !mediaPreview)) && (
-                    <div className="whitespace-pre-wrap">
-                      <span className="font-semibold">Aramiyot Wellness</span>{' '}
-                      {postText || (!mediaPreview ? <span className="text-neutral-500 italic">Your post content will appear here...</span> : '')}
+                  <div className="p-3 space-y-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex space-x-4">
+                        <Heart className="h-6 w-6 hover:text-red-500 cursor-pointer" />
+                        <MessageCircle className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                        <Send className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                      </div>
+                      <Bookmark className="h-6 w-6 hover:text-neutral-400 cursor-pointer" />
+                    </div>
+                    <p className="font-semibold">1,234 likes</p>
+                    {(postText || (!postText && !mediaPreview)) && (
+                      <div className="whitespace-pre-wrap">
+                        <span className="font-semibold">Aramiyot Wellness</span>{' '}
+                        {postText || (!mediaPreview ? <span className="text-neutral-500 italic">Your post content will appear here...</span> : '')}
+                      </div>
+                    )}
+                    <p className="text-xs text-neutral-500 cursor-pointer hover:underline">View all 42 comments</p>
+                    <p className="text-xs text-neutral-500">1 DAY AGO</p>
+                  </div>
+                </div>
+              </CardContent>
+            )}
+
+            {platform === 'facebook' && (
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src="https://placehold.co/40x40/1877F2/FFFFFF.png?text=AW" alt="User Avatar" data-ai-hint="brand logo" />
+                    <AvatarFallback className="bg-primary text-primary-foreground">AW</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-sm">Aramiyot Wellness</p>
+                    <p className="text-xs text-muted-foreground flex items-center">
+                      Just now · <Globe className="h-3 w-3 ml-1" />
+                    </p>
+                  </div>
+                </div>
+
+                {postText && (
+                  <p className="text-sm whitespace-pre-wrap">{postText}</p>
+                )}
+                 {!postText && !mediaPreview && (
+                    <p className="text-sm text-muted-foreground italic">Your post content will appear here...</p>
+                )}
+
+
+                {mediaPreview && mediaType === 'image' && (
+                  <Image src={mediaPreview} alt="Media preview" width={500} height={300} className="w-full h-auto object-contain rounded-md border max-h-[400px]" />
+                )}
+                {mediaPreview && mediaType === 'video' && (
+                  <video src={mediaPreview} controls className="w-full h-auto rounded-md border max-h-[400px]" />
+                )}
+                {!mediaPreview && postText && ( /* Show image icon placeholder if text exists but no media */
+                    <div className="w-full aspect-video bg-muted/50 rounded-md flex items-center justify-center border">
+                       <ImageIcon className="h-16 w-16 text-muted-foreground/50" />
                     </div>
                   )}
-                  
-                  <p className="text-xs text-neutral-500 cursor-pointer hover:underline">View all 42 comments</p>
-                  <p className="text-xs text-neutral-500">1 DAY AGO</p>
+
+
+                <div className="text-xs text-muted-foreground flex justify-between">
+                  <span>1.2K Likes</span>
+                  <span>345 Comments · 123 Shares</span>
                 </div>
-              </div>
-            </CardContent>
-             <CardFooter className="text-xs text-neutral-400 border-t border-neutral-700 pt-3">
+
+                <div className="flex justify-around border-t border-b py-2">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                    <ThumbsUp className="mr-2 h-4 w-4" /> Like
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                    <MessageSquare className="mr-2 h-4 w-4" /> Comment
+                  </Button>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                    <Share2 className="mr-2 h-4 w-4" /> Share
+                  </Button>
+                </div>
+              </CardContent>
+            )}
+
+            <CardFooter className={cn(
+                "text-xs border-t pt-3",
+                platform === 'instagram' ? "text-neutral-400 border-neutral-700" : "text-muted-foreground border-border"
+              )}>
                 This is a simulated preview. Actual appearance may vary on the platform.
             </CardFooter>
           </Card>
@@ -255,7 +326,8 @@ const Avatar: React.FC<{className?: string, children: React.ReactNode}> = ({clas
   </div>
 );
 
-const AvatarImage: React.FC<{src: string, alt: string, className?: string} & React.ImgHTMLAttributes<HTMLImageElement>> = ({src, alt, className, ...props}) => (
+const AvatarImage: React.FC<{src: string, alt: string, className?: string, 'data-ai-hint'?: string} & React.ImgHTMLAttributes<HTMLImageElement>> = ({src, alt, className, ...props}) => (
+  // eslint-disable-next-line @next/next/no-img-element
   <img src={src} alt={alt} className={`aspect-square h-full w-full ${className}`} {...props} />
 );
 
