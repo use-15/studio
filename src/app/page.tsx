@@ -8,7 +8,7 @@ import { curatedWellnessResources } from '@/lib/placeholder-data';
 import type { WellnessResource } from '@/types';
 import { getPersonalizedRecommendations } from '@/ai/flows/personalized-recommendations';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, BookOpen, UserCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen, UserCheck, Box } from 'lucide-react'; // Changed Cube to Box
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -112,6 +112,27 @@ export default function LandingPage() {
               </Card>
           )}
         </section>
+        
+        {/* 3D Animation Placeholder Section */}
+        <section className="container mx-auto px-4 py-12 md:py-16 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary mb-6">
+            Visualize Your Path to Wellness
+          </h2>
+          <p className="text-md md:text-lg text-foreground/80 mb-8 max-w-2xl mx-auto">
+            Imagine an interactive 3D animation here, dynamically representing your health progress, goals, and areas of focus. This space is ready for a stunning visual experience.
+          </p>
+          <div className="aspect-video bg-card/50 backdrop-blur-sm rounded-xl shadow-xl border border-dashed border-primary/30 flex items-center justify-center p-4 ring-1 ring-inset ring-primary/20">
+            <div className="text-center p-6 md:p-8 bg-background/70 rounded-lg">
+              <Box className="h-16 w-16 md:h-20 md:w-20 text-primary/60 mx-auto mb-4" /> 
+              <p className="text-xl font-semibold text-primary/90">
+                Future 3D Health Visualization
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                (Developer: Integrate 3D animation component here using libraries like React Three Fiber or Spline.)
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Curated Content Section / Features Overview */}
         <section className="container mx-auto px-4">
@@ -152,4 +173,3 @@ export default function LandingPage() {
   );
 }
 
-    
