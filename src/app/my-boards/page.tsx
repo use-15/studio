@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   UserCircle,
   Bell,
@@ -19,7 +22,9 @@ import {
   BriefcaseMedical,
   Stethoscope,
   Pill,
-  PlusCircle
+  PlusCircle,
+  ListChecks, // Added for To-Do List
+  Trash2 // Added for To-Do List
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday, getDate } from 'date-fns';
 import Image from 'next/image';
@@ -90,18 +95,79 @@ const examinations = [
   },
 ];
 
+interface TodoItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string; // Store as ISO string for localStorage
+}
+
+const LOCAL_STORAGE_KEY_TODOS = 'armiyot_dashboard_todos';
+
 export default function DashboardPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [chartTimeRange, setChartTimeRange] = useState<'D' | 'W' | 'M' | 'Y'>('Y');
+
+  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [newTodoText, setNewTodoText] = useState('');
+
+  // Load todos from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const storedTodos = localStorage.getItem(LOCAL_STORAGE_KEY_TODOS);
+        if (storedTodos) {
+          setTodos(JSON.parse(storedTodos));
+        }
+      } catch (error) {
+        console.error("Failed to load todos from localStorage:", error);
+      }
+    }
+  }, []);
+
+  // Save todos to localStorage when they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY_TODOS, JSON.stringify(todos));
+      } catch (error) {
+        console.error("Failed to save todos to localStorage:", error);
+      }
+    }
+  }, [todos]);
+
+  const handleAddTodo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newTodoText.trim() === '') return;
+    const newTodo: TodoItem = {
+      id: Date.now().toString(),
+      text: newTodoText.trim(),
+      completed: false,
+      createdAt: new Date().toISOString(),
+    };
+    setTodos(prevTodos => [...prevTodos, newTodo]);
+    setNewTodoText('');
+  };
+
+  const handleToggleTodo = (id: string) => {
+    setTodos(prevTodos =>
+      prevTodos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const handleDeleteTodo = (id: string) => {
+    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+  };
+
 
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(currentMonth),
     end: endOfMonth(currentMonth),
   });
 
-  // Create an array of empty items for the days before the first day of the month
-  const firstDayOfMonth = getDay(startOfMonth(currentMonth)); // 0 for Sunday, 1 for Monday, etc.
-  // Adjusting for week starting on Monday for rendering
+  const firstDayOfMonth = getDay(startOfMonth(currentMonth)); 
   const emptyStartCells = Array(firstDayOfMonth === 0 ? 6 : firstDayOfMonth -1).fill(null);
 
 
@@ -145,7 +211,7 @@ export default function DashboardPage() {
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-headline">Notifications</CardTitle>
-          <p className="text-xs text-muted-foreground">{notifications[0].date}</p>
+          <p className="text-xs text-muted-foreground">{notifications.length > 0 ? notifications[0].date : ''}</p>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -169,6 +235,7 @@ export default function DashboardPage() {
             </div>
           </div>
         ))}
+        {notifications.length === 0 && <p className="text-sm text-muted-foreground">No new notifications.</p>}
       </CardContent>
     </Card>
   );
@@ -178,7 +245,6 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center mb-4">
             <p className="text-sm">Boss Willis</p>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24"><path fill="#fff" d="M30.275 6.616h-24.4a1.54 1.54 0 00-1.54 1.54v7.7a1.54 1.54 0 001.54 1.54h24.4a1.54 1.54 0 001.54-1.54v-7.7a1.54 1.54 0 00-1.54-1.54zm-20.054 7.954h-2.76v-1.664h2.76zm3.092 0h-2.76V9.466h.003l2.757.002zm3.091 0h-2.76v-4.89h2.76zm12.144-5.99H14.17v6.25h14.382V8.58zm-3.092 4.335H24.7v-2.61h2.76v2.61z"/></svg>
-
         </div>
         <p className="text-lg font-mono tracking-wider mb-4">2345 4845 7885 5432</p>
         <div className="flex justify-end">
@@ -188,6 +254,73 @@ export default function DashboardPage() {
         </div>
     </Card>
   );
+  
+  const renderTodoList = () => (
+    <Card className="shadow-lg rounded-xl">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-headline flex items-center">
+            <ListChecks className="mr-2 h-5 w-5 text-primary" /> To-Do List
+          </CardTitle>
+          <Badge variant={todos.filter(t => !t.completed).length > 0 ? "destructive" : "default"}>
+            {todos.filter(t => !t.completed).length} pending
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleAddTodo} className="flex gap-2 mb-4">
+          <Input
+            type="text"
+            value={newTodoText}
+            onChange={(e) => setNewTodoText(e.target.value)}
+            placeholder="Add a new task..."
+            className="flex-grow"
+          />
+          <Button type="submit" size="icon">
+            <PlusCircle className="h-5 w-5" />
+          </Button>
+        </form>
+        <ScrollArea className="h-[200px] pr-3">
+          {todos.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">No tasks yet. Add some!</p>
+          )}
+          <div className="space-y-2">
+            {todos.map((todo) => (
+              <div
+                key={todo.id}
+                className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors"
+              >
+                <Checkbox
+                  id={`todo-${todo.id}`}
+                  checked={todo.completed}
+                  onCheckedChange={() => handleToggleTodo(todo.id)}
+                  aria-label={todo.text}
+                />
+                <label
+                  htmlFor={`todo-${todo.id}`}
+                  className={`flex-grow text-sm cursor-pointer ${
+                    todo.completed ? 'line-through text-muted-foreground' : ''
+                  }`}
+                >
+                  {todo.text}
+                </label>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleDeleteTodo(todo.id)}
+                  aria-label="Delete task"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+
 
   const renderExaminations = () => (
     <div className="mb-8">
@@ -341,6 +474,7 @@ export default function DashboardPage() {
             {renderUserProfile()}
             {renderNotifications()}
             {renderPaymentCard()}
+            {renderTodoList()}
           </div>
 
           {/* Right Column */}
@@ -355,3 +489,4 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
+
