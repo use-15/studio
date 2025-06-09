@@ -52,8 +52,8 @@ export default function LandingPage() {
              <Image src="https://placehold.co/1600x900.png" alt="Abstract wellness background" layout="fill" objectFit="cover" data-ai-hint="wellness serene" priority />
           </div>
           <div className="relative z-10 container mx-auto px-4">
-            <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" />
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-primary mb-6">
+            {/* <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" /> Removed Sparkles icon */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-primary mb-6 pt-8"> {/* Added pt-8 for spacing if needed */}
               Welcome to Aramiyot Wellness Hub
             </h1>
             <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-3xl mx-auto">
