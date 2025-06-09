@@ -1,4 +1,4 @@
-import type { WellnessResource } from '@/types';
+import type { WellnessResource, Hospital, Doctor, Service } from '@/types';
 
 export const curatedWellnessResources: WellnessResource[] = [
   {
@@ -113,5 +113,57 @@ export const audioBookSummaries: WellnessResource[] = [
     type: 'audio',
     contentUrl: '#',
     duration: '22 min audio',
+  },
+];
+
+const placeholderDoctors: Doctor[] = [
+  { id: 'doc1', name: 'Dr. Emily Carter', specialty: 'Cardiology', avatarUrl: 'https://placehold.co/80x80.png', 'data-ai-hint': 'doctor avatar' },
+  { id: 'doc2', name: 'Dr. Ben Adams', specialty: 'Orthopedics', avatarUrl: 'https://placehold.co/80x80.png', 'data-ai-hint': 'doctor avatar' },
+  { id: 'doc3', name: 'Dr. Olivia Chen', specialty: 'Pediatrics', avatarUrl: 'https://placehold.co/80x80.png', 'data-ai-hint': 'doctor avatar' },
+  { id: 'doc4', name: 'Dr. Marcus Green', specialty: 'Neurology', avatarUrl: 'https://placehold.co/80x80.png', 'data-ai-hint': 'doctor avatar' },
+];
+
+const placeholderServices: Service[] = [
+  { id: 'serv1', name: 'Cardiology', description: 'Comprehensive heart care and treatment.' },
+  { id: 'serv2', name: 'Orthopedics', description: 'Musculoskeletal system treatment and surgery.' },
+  { id: 'serv3', name: 'Pediatrics', description: 'Medical care for infants, children, and adolescents.' },
+  { id: 'serv4', name: 'Neurology', description: 'Diagnosis and treatment of nervous system disorders.' },
+  { id: 'serv5', name: 'Emergency Care', description: '24/7 emergency medical services.' },
+  { id: 'serv6', name: 'Oncology', description: 'Cancer diagnosis and treatment.' },
+];
+
+export const hospitalData: Hospital[] = [
+  {
+    id: 'hosp1',
+    name: 'City General Hospital',
+    address: '123 Main St, Anytown, USA',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'hospital building',
+    services: [placeholderServices[0], placeholderServices[1], placeholderServices[4]],
+    doctors: [placeholderDoctors[0], placeholderDoctors[1]],
+    phone: '555-1234',
+    website: 'https://example.com/citygeneral'
+  },
+  {
+    id: 'hosp2',
+    name: 'Green Valley Community Clinic',
+    address: '456 Oak Ave, Anytown, USA',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'clinic exterior',
+    services: [placeholderServices[2], placeholderServices[3]],
+    doctors: [placeholderDoctors[2], placeholderDoctors[3]],
+    phone: '555-5678',
+    website: 'https://example.com/greenvalley'
+  },
+  {
+    id: 'hosp3',
+    name: 'St. Luke\'s Medical Center',
+    address: '789 Pine Ln, Anytown, USA',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'modern hospital',
+    services: [placeholderServices[0], placeholderServices[3], placeholderServices[5]],
+    doctors: [placeholderDoctors[0], placeholderDoctors[3]],
+    phone: '555-9012',
+    website: 'https://example.com/stluke'
   },
 ];

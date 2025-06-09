@@ -7,6 +7,7 @@ export interface WellnessResource {
   type: 'article' | 'video' | 'audio' | 'link' | 'tip';
   contentUrl?: string; // Link to the full resource
   duration?: string; // e.g., "10 min read", "15 min video"
+  'data-ai-hint'?: string;
 }
 
 export interface Board {
@@ -20,4 +21,30 @@ export interface ChatMessage {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+}
+
+export interface Doctor {
+  id: string;
+  name: string;
+  specialty: string;
+  avatarUrl?: string;
+  'data-ai-hint'?: string;
+}
+
+export interface Service {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Hospital {
+  id: string;
+  name: string;
+  address: string;
+  imageUrl: string;
+  services: Service[];
+  doctors: Doctor[];
+  'data-ai-hint'?: string;
+  phone?: string;
+  website?: string;
 }

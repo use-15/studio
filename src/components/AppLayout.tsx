@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  Hospital, // Added Hospital icon
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -40,6 +41,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
   { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare },
+  { href: '/hospitals', label: 'Hospitals', icon: Hospital }, // Added Hospitals link
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
 ];
