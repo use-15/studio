@@ -13,7 +13,7 @@ import {
   UserCircle,
   PanelLeft,
   Headphones,
-  Share2, // Added Share2 icon
+  // Share2, // Removed Share2 icon as Social Poster is removed
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -39,7 +39,7 @@ const navItems = [
   { href: '/my-boards', label: 'My Boards', icon: KanbanSquare },
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
-  { href: '/social-poster', label: 'Social Poster', icon: Share2 }, // New navigation item
+  // { href: '/social-poster', label: 'Social Poster', icon: Share2 }, // Removed Social Poster
 ];
 
 function MainSidebar() {
