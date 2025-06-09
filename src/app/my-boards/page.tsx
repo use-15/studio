@@ -3,231 +3,356 @@
 
 import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
-import ResourceCard from '@/components/ResourceCard';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from '@/components/ui/dialog';
-import { PlusCircle, Trash2, Edit3, X, GripVertical, LayoutGrid, List, KanbanSquare } from 'lucide-react';
-import type { Board } from '@/types';
-import { useBoardsContext } from '@/components/AppProviders';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  UserCircle,
+  Bell,
+  CreditCard,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  BriefcaseMedical,
+  Stethoscope,
+  Pill,
+  PlusCircle
+} from 'lucide-react';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday, getDate } from 'date-fns';
+import Image from 'next/image';
 
-export default function MyBoardsPage() {
-  const boardsContext = useBoardsContext();
-  const [newBoardName, setNewBoardName] = useState('');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
-  const [editingBoard, setEditingBoard] = useState<Board | null>(null);
-  const [editingBoardName, setEditingBoardName] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid'); // 'grid' or 'list'
+const healthChartData = [
+  { name: '2016', myData: 65, average: 60 },
+  { name: '2017', myData: 70, average: 62 },
+  { name: '2018', myData: 60, average: 68 },
+  { name: '2019', myData: 75, average: 70 },
+  { name: '2020', myData: 80, average: 75 },
+  { name: '2021', myData: 78, average: 72 },
+];
 
-  useEffect(() => {
-    // If a board is deleted and it was the selectedBoard, clear selection
-    if (selectedBoard && boardsContext && !boardsContext.boards.find(b => b.id === selectedBoard.id)) {
-      setSelectedBoard(null);
-    }
-  }, [boardsContext?.boards, selectedBoard]);
+const userProfile = {
+  name: 'Boss Willis',
+  ageLocation: '24 years, California',
+  avatarUrl: 'https://placehold.co/80x80/E5F5E0/228B22.png?text=BW',
+  bloodType: '-B',
+  height: '170 cm',
+  weight: '60 kg',
+};
+
+const notifications = [
+  {
+    id: 'notif1',
+    type: 'medication',
+    title: 'Kognum',
+    details: '10mg',
+    schedule: 'MON WED FRI SUN - 2 times a day before food',
+    icon: <Pill className="h-5 w-5 text-blue-500" />,
+    date: '20 Aug 2019',
+  },
+  {
+    id: 'notif2',
+    type: 'appointment',
+    title: 'Surgeon - Dr. Isabella Bowers',
+    details: 'California Medical Center',
+    specialty: 'Spinal pain',
+    date: '26 Aug 2019',
+    time: '12:45 AM',
+    avatarUrl: 'https://placehold.co/40x40/E5F5E0/228B22.png?text=IB',
+    icon: <Stethoscope className="h-5 w-5 text-green-500" />,
+  },
+];
+
+const examinations = [
+  {
+    id: 'exam1',
+    date: '21 Jul, 2019',
+    title: 'Hypertensive crisis',
+    status: 'Ongoing treatment',
+    statusColor: 'blue',
+  },
+  {
+    id: 'exam2',
+    date: '18 Jul, 2019',
+    title: 'Osteoporosis',
+    status: 'Incurable',
+    statusColor: 'red',
+    tag: 'Need attention'
+  },
+  {
+    id: 'exam3',
+    date: '21 Jun, 2019',
+    title: 'General Checkup',
+    status: 'Examination',
+    statusColor: 'green',
+  },
+];
+
+export default function DashboardPage() {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [chartTimeRange, setChartTimeRange] = useState<'D' | 'W' | 'M' | 'Y'>('Y');
+
+  const daysInMonth = eachDayOfInterval({
+    start: startOfMonth(currentMonth),
+    end: endOfMonth(currentMonth),
+  });
+
+  // Create an array of empty items for the days before the first day of the month
+  const firstDayOfMonth = getDay(startOfMonth(currentMonth)); // 0 for Sunday, 1 for Monday, etc.
+  // Adjusting for week starting on Monday for rendering
+  const emptyStartCells = Array(firstDayOfMonth === 0 ? 6 : firstDayOfMonth -1).fill(null);
 
 
-  if (!boardsContext) return <AppLayout><div>Loading...</div></AppLayout>; // Or a proper loader
-  const { boards, createBoard, deleteBoard, updateBoardName } = boardsContext;
-
-  const handleCreateBoard = () => {
-    if (newBoardName.trim()) {
-      createBoard(newBoardName.trim());
-      setNewBoardName('');
-      setIsCreateDialogOpen(false);
-    }
+  const handlePrevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
 
-  const handleDeleteBoard = (boardId: string) => {
-    deleteBoard(boardId);
-    if (selectedBoard?.id === boardId) {
-      setSelectedBoard(null);
-    }
+  const handleNextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
   };
 
-  const handleEditBoard = (board: Board) => {
-    setEditingBoard(board);
-    setEditingBoardName(board.name);
-  };
-
-  const handleSaveEditBoard = () => {
-    if (editingBoard && editingBoardName.trim()) {
-      updateBoardName(editingBoard.id, editingBoardName.trim());
-      if (selectedBoard?.id === editingBoard.id) {
-        setSelectedBoard(prev => prev ? { ...prev, name: editingBoardName.trim() } : null);
-      }
-      setEditingBoard(null);
-    }
-  };
-
-  const renderBoardItem = (board: Board) => (
-    <Card 
-      key={board.id} 
-      className={`hover:shadow-lg transition-shadow cursor-pointer ${selectedBoard?.id === board.id ? 'ring-2 ring-primary' : ''}`}
-      onClick={() => setSelectedBoard(board)}
-    >
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-headline">{board.name}</CardTitle>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-              <GripVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleEditBoard(board)}}>
-              <Edit3 className="mr-2 h-4 w-4" /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {e.stopPropagation(); handleDeleteBoard(board.id)}} className="text-destructive focus:text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">{board.resources.length} item(s)</p>
+  const renderUserProfile = () => (
+    <Card className="shadow-lg rounded-xl overflow-hidden">
+      <CardContent className="p-6 text-center">
+        <Avatar className="h-20 w-20 mx-auto mb-4 ring-2 ring-primary">
+          <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} data-ai-hint="user avatar"/>
+          <AvatarFallback>{userProfile.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+        </Avatar>
+        <h2 className="text-xl font-semibold font-headline">{userProfile.name}</h2>
+        <p className="text-sm text-muted-foreground mb-4">{userProfile.ageLocation}</p>
+        <div className="grid grid-cols-3 gap-2 text-sm">
+          <div>
+            <p className="text-xs text-muted-foreground">Blood</p>
+            <p className="font-semibold">{userProfile.bloodType}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Height</p>
+            <p className="font-semibold">{userProfile.height}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Weight</p>
+            <p className="font-semibold">{userProfile.weight}</p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
 
+  const renderNotifications = () => (
+    <Card className="shadow-lg rounded-xl">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-lg font-headline">Notifications</CardTitle>
+          <p className="text-xs text-muted-foreground">{notifications[0].date}</p>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {notifications.map((notif) => (
+          <div key={notif.id} className="flex items-start space-x-3">
+            {notif.type === 'medication' && notif.icon ? (
+              <div className="p-2 bg-blue-100 rounded-full">{notif.icon}</div>
+            ) : notif.type === 'appointment' && notif.avatarUrl ? (
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={notif.avatarUrl} alt={notif.title} data-ai-hint="doctor avatar"/>
+                <AvatarFallback>{notif.title.split(' ').map(n=>n[0]).slice(0,2).join('')}</AvatarFallback>
+              </Avatar>
+            ) : (
+              <div className="p-2 bg-gray-100 rounded-full"><Bell className="h-5 w-5 text-gray-500"/></div>
+            )}
+            <div>
+              <p className="font-semibold text-sm">{notif.title} {notif.type === 'medication' ? <span className="text-xs text-muted-foreground">{notif.details}</span> : ''}</p>
+              {notif.type === 'appointment' && <p className="text-xs text-muted-foreground">{notif.specialty} - {notif.details}</p>}
+              {notif.schedule && <p className="text-xs text-muted-foreground">{notif.schedule}</p>}
+              {notif.time && <p className="text-xs text-muted-foreground">Date: {notif.date}, Time: {notif.time}</p>}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
+  const renderPaymentCard = () => (
+     <Card className="shadow-lg rounded-xl bg-gradient-to-br from-accent/80 via-accent to-accent/70 text-accent-foreground p-5">
+        <div className="flex justify-between items-center mb-4">
+            <p className="text-sm">Boss Willis</p>
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24"><path fill="#fff" d="M30.275 6.616h-24.4a1.54 1.54 0 00-1.54 1.54v7.7a1.54 1.54 0 001.54 1.54h24.4a1.54 1.54 0 001.54-1.54v-7.7a1.54 1.54 0 00-1.54-1.54zm-20.054 7.954h-2.76v-1.664h2.76zm3.092 0h-2.76V9.466h.003l2.757.002zm3.091 0h-2.76v-4.89h2.76zm12.144-5.99H14.17v6.25h14.382V8.58zm-3.092 4.335H24.7v-2.61h2.76v2.61z"/></svg>
+
+        </div>
+        <p className="text-lg font-mono tracking-wider mb-4">2345 4845 7885 5432</p>
+        <div className="flex justify-end">
+            <Button variant="ghost" className="bg-white/20 hover:bg-white/30 text-accent-foreground p-2 h-auto rounded-md">
+                <PlusCircle className="h-5 w-5 mr-1" /> Add Card
+            </Button>
+        </div>
+    </Card>
+  );
+
+  const renderExaminations = () => (
+    <div className="mb-8">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold font-headline text-primary">Examinations</h2>
+        <Button variant="link" className="text-primary hover:text-primary/80">
+          See All <Eye className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {examinations.map((exam) => {
+          let borderColorClass = 'border-muted';
+          if (exam.statusColor === 'blue') borderColorClass = 'border-blue-500';
+          else if (exam.statusColor === 'red') borderColorClass = 'border-red-500';
+          else if (exam.statusColor === 'green') borderColorClass = 'border-green-500';
+
+          return (
+            <Card key={exam.id} className={`shadow-md rounded-lg border-l-4 ${borderColorClass}`}>
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">{exam.date}</p>
+                <h3 className="font-semibold mt-1 mb-1">{exam.title}</h3>
+                <p className="text-sm text-muted-foreground">{exam.status}</p>
+                {exam.tag && <Badge variant="outline" className="mt-2 border-orange-500 text-orange-600">{exam.tag}</Badge>}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+  
+  const renderHealthCurve = () => (
+    <Card className="shadow-lg rounded-xl mb-8">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-xl font-headline">Health Curve</CardTitle>
+          <div className="flex space-x-1">
+            {(['D', 'W', 'M', 'Y'] as const).map((range) => (
+              <Button
+                key={range}
+                variant={chartTimeRange === range ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setChartTimeRange(range)}
+                className="px-2 py-1 h-auto text-xs"
+              >
+                {range}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div style={{ height: '250px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={healthChartData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" />
+              <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} stroke="hsl(var(--muted-foreground))" />
+              <Tooltip
+                contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    borderColor: 'hsl(var(--border))',
+                    borderRadius: 'var(--radius)'
+                }}
+                labelStyle={{ color: 'hsl(var(--foreground))' }}
+              />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
+              <Line type="monotone" dataKey="myData" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 6 }} name="My Data" />
+              <Line type="monotone" dataKey="average" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 4, fill: 'hsl(var(--chart-2))' }} name="Average" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderNearestTreatment = () => (
+    <Card className="shadow-lg rounded-xl mb-8">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+            <CardTitle className="text-xl font-headline">Nearest Treatment</CardTitle>
+            <Button variant="link" size="sm" className="text-primary">
+                {format(currentMonth, 'MMMM yyyy')} <ChevronRight className="ml-1 h-4 w-4"/>
+            </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-between items-center mb-3">
+          <Button variant="ghost" size="icon" onClick={handlePrevMonth} className="h-8 w-8">
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <p className="text-sm font-semibold">{format(currentMonth, 'MMMM yyyy')}</p>
+          <Button variant="ghost" size="icon" onClick={handleNextMonth} className="h-8 w-8">
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-2">
+          {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(day => <div key={day}>{day}</div>)}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {emptyStartCells.map((_, index) => (
+            <div key={`empty-${index}`} className="p-1.5 rounded-md"></div>
+          ))}
+          {daysInMonth.map((day) => (
+            <Button
+              key={day.toString()}
+              variant={isToday(day) ? 'secondary' : 'ghost'}
+              size="icon"
+              className={`h-8 w-8 p-0 text-xs font-normal rounded-md ${isToday(day) ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-accent hover:text-accent-foreground'}`}
+            >
+              {getDate(day)}
+            </Button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderAdvice = () => (
+    <Card className="shadow-lg rounded-xl">
+      <CardHeader>
+        <CardTitle className="text-xl font-headline flex items-center">
+          <Info className="mr-2 h-5 w-5 text-primary" /> Advice
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground mb-2">
+          The clinical service is consultative and available on a 24-hour basis. Further medical advice can be obtained...
+        </p>
+        <Button variant="link" asChild className="p-0 h-auto text-sm text-primary hover:text-primary/80">
+          <a href="#" target="_blank" rel="noopener noreferrer">More info via the Clinical Advice link</a>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+
   return (
     <AppLayout>
       <div className="space-y-8">
-        <header className="pb-6 border-b flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold font-headline text-primary">My Boards</h1>
-            <p className="text-lg text-muted-foreground mt-2">
-              Organize your favorite wellness resources into personalized boards.
-            </p>
-          </div>
-           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 h-5 w-5" /> Create New Board
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create a New Board</DialogTitle>
-                <DialogDescription>
-                  Give your new board a name to start organizing resources.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4">
-                <Input
-                  placeholder="E.g., Mindfulness Practices, Healthy Recipes"
-                  value={newBoardName}
-                  onChange={(e) => setNewBoardName(e.target.value)}
-                />
-              </div>
-              <DialogFooter>
-                <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-                <Button onClick={handleCreateBoard}>Create Board</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+        <header className="pb-6 border-b">
+          <h1 className="text-4xl font-bold font-headline text-primary">Health Dashboard</h1>
+          <p className="text-lg text-muted-foreground mt-2">
+            Your personal overview of health metrics, notifications, and advice.
+          </p>
         </header>
 
-        {editingBoard && (
-          <Dialog open={!!editingBoard} onOpenChange={() => setEditingBoard(null)}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Board Name</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                <Input
-                  value={editingBoardName}
-                  onChange={(e) => setEditingBoardName(e.target.value)}
-                />
-              </div>
-              <DialogFooter>
-                 <Button variant="outline" onClick={() => setEditingBoard(null)}>Cancel</Button>
-                <Button onClick={handleSaveEditBoard}>Save Changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-4 lg:col-span-3 space-y-4">
-            <h2 className="text-2xl font-semibold">Your Boards</h2>
-            {boards.length > 0 ? (
-              <div className="space-y-3">
-                {boards.map(renderBoardItem)}
-              </div>
-            ) : (
-              <div className="text-center py-8 px-4 border border-dashed rounded-lg">
-                <p className="text-muted-foreground">You haven't created any boards yet.</p>
-                <Button variant="link" onClick={() => setIsCreateDialogOpen(true)} className="mt-2">Create your first board</Button>
-              </div>
-            )}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-1 space-y-6">
+            {renderUserProfile()}
+            {renderNotifications()}
+            {renderPaymentCard()}
           </div>
 
-          <div className="md:col-span-8 lg:col-span-9">
-            {selectedBoard ? (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-3xl font-bold font-headline text-primary">{selectedBoard.name}</h2>
-                    <div>
-                        <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('grid')} className="mr-2">
-                            <LayoutGrid className="h-5 w-5" />
-                        </Button>
-                        <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('list')}>
-                            <List className="h-5 w-5" />
-                        </Button>
-                    </div>
-                </div>
-                {selectedBoard.resources.length > 0 ? (
-                  <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "space-y-4"}>
-                    {selectedBoard.resources.map(resource => (
-                       viewMode === 'grid' ? (
-                        <ResourceCard
-                          key={resource.id}
-                          resource={resource}
-                          showAddToBoard={false} /* Already on a board */
-                          showRemoveFromBoard={true}
-                          boardIdForRemoval={selectedBoard.id}
-                        />
-                      ) : (
-                        <Card key={resource.id} className="flex items-center p-4">
-                          <img src={resource.imageUrl} alt={resource.title} className="w-16 h-16 object-cover rounded mr-4" {...(resource['data-ai-hint'] ? { 'data-ai-hint': resource['data-ai-hint'] } : {})}/>
-                          <div className="flex-grow">
-                            <h3 className="font-semibold">{resource.title}</h3>
-                            <p className="text-sm text-muted-foreground">{resource.category}</p>
-                          </div>
-                          <Button variant="ghost" size="icon" onClick={() => boardsContext.removeResourceFromBoard(selectedBoard.id, resource.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </Card>
-                      )
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 px-4 border border-dashed rounded-lg">
-                    <p className="text-xl text-muted-foreground">This board is empty.</p>
-                    <p className="text-sm text-muted-foreground mt-1">Add resources from the <Link href="/wellness-library" className="text-primary hover:underline">Wellness Library</Link>.</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center p-8 border border-dashed rounded-lg bg-muted/20">
-                <KanbanSquare className="h-16 w-16 text-muted-foreground mb-4" />
-                <p className="text-xl text-muted-foreground">Select a board to view its content</p>
-                <p className="text-sm text-muted-foreground mt-1">or create a new board to get started.</p>
-              </div>
-            )}
+          {/* Right Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {renderExaminations()}
+            {renderHealthCurve()}
+            {renderNearestTreatment()}
+            {renderAdvice()}
           </div>
         </div>
       </div>
     </AppLayout>
   );
 }
+
