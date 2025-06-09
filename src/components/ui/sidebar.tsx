@@ -165,7 +165,7 @@ type SidebarComponentProps = React.ComponentProps<"div"> & {
   side?: "left" | "right";
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
-  defaultOpen?: boolean; // Added to destructure and prevent spread
+  defaultOpen?: boolean; // Ensure defaultOpen is part of the props type
 };
 
 const Sidebar = React.forwardRef<HTMLDivElement, SidebarComponentProps>(
@@ -176,8 +176,8 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarComponentProps>(
       collapsible = "offcanvas",
       className,
       children,
-      defaultOpen, // Destructure defaultOpen
-      ...rest // Use 'rest' for actual DOM attributes
+      defaultOpen, // Explicitly destructure defaultOpen
+      ...rest // 'rest' will contain other valid div attributes
     },
     ref
   ) => {
@@ -250,7 +250,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarComponentProps>(
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
-          {...rest}
+          {...rest} 
         >
           <div
             data-sidebar="sidebar"
