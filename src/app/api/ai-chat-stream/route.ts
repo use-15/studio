@@ -15,11 +15,17 @@ export async function POST(request: Request) {
       return NextResponse.json({error: 'Invalid input', details: validatedInput.error.flatten()}, {status: 400});
     }
 
+    const promptInput: z.infer<typeof AIHealthChatbotInputSchema> = {
+        inquiry: validatedInput.data.inquiry
+    };
+
+    if (validatedInput.data.photoDataUri) {
+        promptInput.photoDataUri = validatedInput.data.photoDataUri;
+    }
+
     const {stream, response: flowResponsePromise} = ai.generateStream({
       prompt: aiHealthChatbotPrompt,
-      input: {inquiry: validatedInput.data.inquiry},
-      // The output schema is defined in the prompt, so not strictly needed here but good for clarity
-      // output: {schema: z.object({ response: z.string() })}, 
+      input: promptInput,
     });
 
     const readableStream = new ReadableStream({
@@ -31,7 +37,6 @@ export async function POST(request: Request) {
               controller.enqueue(new TextEncoder().encode(text));
             }
           }
-          // Ensure the flow completes and handle potential errors from the full response
           await flowResponsePromise; 
         } catch (error) {
           console.error("Error during stream processing:", error);

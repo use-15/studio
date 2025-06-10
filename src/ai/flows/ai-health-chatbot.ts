@@ -16,6 +16,9 @@ import {z} from 'genkit';
 
 export const AIHealthChatbotInputSchema = z.object({
   inquiry: z.string().describe('The health inquiry from the user.'),
+  photoDataUri: z.string().optional().describe(
+    "An optional photo related to the inquiry, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+  ),
 });
 export type AIHealthChatbotInput = z.infer<typeof AIHealthChatbotInputSchema>;
 
@@ -34,7 +37,14 @@ export const aiHealthChatbotPrompt = ai.definePrompt({
   name: 'aiHealthChatbotPrompt',
   input: {schema: AIHealthChatbotInputSchema},
   output: {schema: AIHealthChatbotOutputSchema},
-  prompt: `You are a helpful AI-powered chatbot that answers general health inquiries and provides basic guidance. Please remember to only provide general guidance and always recommend consulting with a healthcare professional for specific medical advice.\n\nUser Inquiry: {{{inquiry}}}`,
+  prompt: `You are a helpful AI-powered chatbot that answers general health inquiries and provides basic guidance.
+Please remember to only provide general guidance and always recommend consulting with a healthcare professional for specific medical advice.
+
+{{#if photoDataUri}}The user has attached an image related to their inquiry. Consider this image when formulating your response:
+{{media url=photoDataUri}}
+{{/if}}
+
+User Inquiry: {{{inquiry}}}`,
 });
 
 const aiHealthChatbotFlow = ai.defineFlow(

@@ -24,6 +24,11 @@ export interface ChatMessage {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  attachment?: {
+    type: 'image'; // For now, only support images
+    url: string; // Data URI for the image
+    name?: string; // Optional file name
+  };
 }
 
 export interface Doctor {
