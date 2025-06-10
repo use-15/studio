@@ -17,6 +17,8 @@ import { Separator } from '@/components/ui/separator';
 import { Star, DownloadCloud, MessageSquare, CheckCircle, BookOpen, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // Helper for localStorage
 const getReviewsFromStorage = (resourceId: string): Review[] => {
@@ -55,10 +57,8 @@ const saveOfflineResourceToStorage = (resource: WellnessResource) => {
   try {
     if (resource.type === 'article' && resource.contentMarkdown) {
       const offlineCopy = { ...resource };
-      // No need to strip anything for articles, save full needed data.
       localStorage.setItem(`offline_${resource.id}`, JSON.stringify(offlineCopy));
     } else if (resource.type === 'video' && resource.youtubeVideoId) {
-      // For videos, save metadata and the video ID/link for bookmarking
       const offlineCopy = { 
         id: resource.id, 
         title: resource.title, 
@@ -67,7 +67,7 @@ const saveOfflineResourceToStorage = (resource: WellnessResource) => {
         category: resource.category, 
         type: resource.type, 
         youtubeVideoId: resource.youtubeVideoId,
-        contentUrl: resource.contentUrl // Save original URL for video
+        contentUrl: resource.contentUrl 
       };
       localStorage.setItem(`offline_${resource.id}`, JSON.stringify(offlineCopy));
     }
@@ -89,7 +89,6 @@ export default function ResourceDetailPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check online status
     if (typeof window !== 'undefined') {
       setIsOffline(!navigator.onLine);
       const handleOnline = () => setIsOffline(false);
@@ -122,9 +121,7 @@ export default function ResourceDetailPage() {
         setReviews(getReviewsFromStorage(resourceId));
         setIsSavedForOffline(!!getOfflineResourceFromStorage(resourceId));
       } else if (!isOffline) {
-        // If online and not found in curated, then it's a 404 (unless we fetch from an API later)
-        // For now, with static data, if not found it's a notFound.
-        // notFound(); // This would throw a 404
+        // notFound(); 
       }
     }
   }, [resourceId, isOffline, toast]);
@@ -165,7 +162,6 @@ export default function ResourceDetailPage() {
   };
   
   if (!resource && !isOffline) {
-     // Still loading or not found yet while online
     return (
       <AppLayout>
         <div className="container mx-auto px-4 py-8 text-center">
@@ -176,7 +172,6 @@ export default function ResourceDetailPage() {
   }
   
   if (!resource && isOffline) {
-    // Offline and resource not in storage
      return (
       <AppLayout>
         <div className="container mx-auto px-4 py-8">
@@ -192,10 +187,8 @@ export default function ResourceDetailPage() {
      );
   }
   
-  // If resource is null after checks, it implies it truly wasn't found
-  // For now, this handles the case where it might still be null
   if (!resource) {
-    notFound(); // Trigger Next.js 404
+    notFound(); 
   }
 
 
@@ -278,7 +271,9 @@ export default function ResourceDetailPage() {
 
           <section className="prose prose-lg dark:prose-invert max-w-none mb-12">
             {resource.type === 'article' && resource.contentMarkdown && (
-              <div dangerouslySetInnerHTML={{ __html: resource.contentMarkdown.replace(/\n/g, '<br />') }} />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {resource.contentMarkdown}
+              </ReactMarkdown>
             )}
             {resource.type === 'video' && resource.youtubeVideoId && (
               <div className="aspect-video">
@@ -309,7 +304,9 @@ export default function ResourceDetailPage() {
                         <CardTitle className="text-accent">Wellness Tip</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div dangerouslySetInnerHTML={{ __html: resource.contentMarkdown.replace(/\n/g, '<br />') }} />
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {resource.contentMarkdown}
+                        </ReactMarkdown>
                     </CardContent>
                 </Card>
             )}
@@ -375,7 +372,7 @@ export default function ResourceDetailPage() {
 
             <div className="space-y-6">
               {reviews.length > 0 ? (
-                reviews.slice().reverse().map((review) => ( // Show newest first
+                reviews.slice().reverse().map((review) => ( 
                   <Card key={review.id} className="p-4 shadow-md">
                     <CardHeader className="p-0 mb-2">
                       <div className="flex justify-between items-center">
@@ -403,12 +400,12 @@ export default function ResourceDetailPage() {
                  <Card key={`placeholder-${index}`} className="p-4 shadow-md mt-6 border-dashed opacity-60">
                      <CardHeader className="p-0 mb-2">
                          <div className="flex justify-between items-center">
-                             <div className="h-4 bg-muted rounded w-1/3"></div> {/* Placeholder for name */}
+                             <div className="h-4 bg-muted rounded w-1/3"></div> 
                              <div className="flex items-center">
                                  {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 text-muted/50"/>)}
                              </div>
                          </div>
-                         <div className="h-3 bg-muted rounded w-1/4 mt-1"></div> {/* Placeholder for date */}
+                         <div className="h-3 bg-muted rounded w-1/4 mt-1"></div> 
                      </CardHeader>
                      <CardContent className="p-0 space-y-1">
                         <div className="h-3 bg-muted rounded w-full"></div>
