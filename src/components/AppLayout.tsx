@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation'; // Import useRouter
 import { useTheme } from 'next-themes';
 import {
   Home,
@@ -18,7 +18,8 @@ import {
   Moon,
   Laptop,
   Hospital,
-  BookMarked, // Added BookMarked icon
+  BookMarked,
+  ArrowLeft, // Added ArrowLeft icon
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -41,7 +42,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
-  { href: '/free-online-library', label: 'Free Online Library', icon: BookMarked }, // Added Free Online Library
+  { href: '/free-online-library', label: 'Free Online Library', icon: BookMarked },
   { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare },
   { href: '/hospitals', label: 'Hospitals', icon: Hospital },
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
@@ -235,6 +236,14 @@ function MobileSidebar() {
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Determine if the back button should be shown.
+  // For example, don't show on the main dashboard page ('/').
+  const showBackButton = pathname !== '/';
+
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -249,6 +258,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </header>
           <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+            {showBackButton && (
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={() => router.back()} 
+                className="mb-4"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
             {children}
           </main>
         </SidebarInset>
