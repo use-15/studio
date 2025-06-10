@@ -45,6 +45,26 @@ Please remember to only provide general guidance and always recommend consulting
 {{/if}}
 
 User Inquiry: {{{inquiry}}}`,
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT', // This is important for health context
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE', // Might need adjustment based on specific health topics
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_MEDIUM_AND_ABOVE', // Important for a general health app
+      },
+    ],
+  },
 });
 
 const aiHealthChatbotFlow = ai.defineFlow(
