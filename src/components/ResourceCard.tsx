@@ -3,7 +3,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { PlusCircle, Trash2, MoreVertical, ExternalLink, BookOpen } from 'lucide-react';
+import { PlusCircle, Trash2, MoreVertical, ExternalLink, BookOpen, Globe } from 'lucide-react'; // Added Globe
 import type { WellnessResource } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -80,12 +80,35 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
     }
   };
 
-  const resourceLink = `/wellness-library/${resource.id}`;
+  const isExternalLibrary = resource.type === 'external-library';
+  const resourceLink = isExternalLibrary && resource.contentUrl ? resource.contentUrl : `/wellness-library/${resource.id}`;
+  const linkTarget = isExternalLibrary ? "_blank" : "_self";
+
+  const renderFooterButton = () => {
+    if (isExternalLibrary) {
+      return (
+        <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
+          <a href={resource.contentUrl} target="_blank" rel="noopener noreferrer">
+            Visit Library <Globe className="ml-1 h-3 w-3" />
+          </a>
+        </Button>
+      );
+    }
+    return (
+      <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
+        <Link href={resourceLink}>
+          {resource.type === 'article' || resource.type === 'tip' ? 'Read More' : 'View Resource'}
+          <BookOpen className="ml-1 h-3 w-3" />
+        </Link>
+      </Button>
+    );
+  };
+
 
   return (
     <Card className={cn("flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg", className)}>
       <CardHeader className="p-0 relative">
-        <Link href={resourceLink} passHref>
+        <a href={resourceLink} target={linkTarget} rel={isExternalLibrary ? "noopener noreferrer" : undefined}>
           <Image
             src={resource.imageUrl}
             alt={resource.title}
@@ -94,25 +117,20 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
             className="w-full h-48 object-cover cursor-pointer"
             {...(resource['data-ai-hint'] ? { 'data-ai-hint': resource['data-ai-hint'] } : {})}
           />
-        </Link>
+        </a>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <div className="flex justify-between items-start mb-2">
           <Badge variant="secondary" className="mb-2 capitalize">{resource.category}</Badge>
           {resource.duration && <Badge variant="outline" className="text-xs">{resource.duration}</Badge>}
         </div>
-        <Link href={resourceLink} passHref>
+        <a href={resourceLink} target={linkTarget} rel={isExternalLibrary ? "noopener noreferrer" : undefined}>
           <CardTitle className="text-lg font-headline mb-1 line-clamp-2 hover:text-primary cursor-pointer">{resource.title}</CardTitle>
-        </Link>
+        </a>
         <CardDescription className="text-sm line-clamp-3 mb-3">{resource.description}</CardDescription>
       </CardContent>
       <CardFooter className="p-4 flex justify-between items-center border-t">
-        <Button asChild variant="link" className="p-0 h-auto text-primary hover:text-primary/80">
-          <Link href={resourceLink}>
-            {resource.type === 'article' || resource.type === 'tip' ? 'Read More' : 'View Resource'}
-            <BookOpen className="ml-1 h-3 w-3" />
-          </Link>
-        </Button>
+        {renderFooterButton()}
         
         {(showAddToBoard || showRemoveFromBoard) && (
            <DropdownMenu>
@@ -154,7 +172,7 @@ export default function ResourceCard({ resource, className, showAddToBoard = tru
                   <span>Remove from this board</span>
                 </DropdownMenuItem>
               )}
-              {resource.contentUrl && resource.contentUrl !== '#' && resource.type !== 'article' && resource.type !== 'video' && (
+              {!isExternalLibrary && resource.contentUrl && resource.contentUrl !== '#' && resource.type !== 'article' && resource.type !== 'video' && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>

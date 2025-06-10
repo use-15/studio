@@ -5,7 +5,7 @@ export interface WellnessResource {
   description: string;
   imageUrl: string;
   category: string; // e.g., 'Mindfulness', 'Nutrition', 'Fitness', 'Article'
-  type: 'article' | 'video' | 'audio' | 'link' | 'tip';
+  type: 'article' | 'video' | 'audio' | 'link' | 'tip' | 'external-library';
   contentUrl?: string; // Link to the full resource OR original source for videos
   duration?: string; // e.g., "10 min read", "15 min video"
   'data-ai-hint'?: string;

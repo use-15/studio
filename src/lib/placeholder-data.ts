@@ -255,3 +255,50 @@ export const hospitalData: Hospital[] = [
     website: 'https://example.com/stluke'
   },
 ];
+
+export const freeOnlineLibraries: WellnessResource[] = [
+  {
+    id: 'FOL001',
+    title: 'Project Gutenberg',
+    description: 'Offers over 70,000 free eBooks, with a focus on older works for which U.S. copyright has expired.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'books library',
+    category: 'Digital Libraries',
+    type: 'external-library',
+    contentUrl: 'https://www.gutenberg.org/',
+    duration: 'Vast Collection',
+  },
+  {
+    id: 'FOL002',
+    title: 'Internet Archive - Books',
+    description: 'Provides access to millions of digitized books, including a large collection of modern eBooks that can be borrowed.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'archive digital',
+    category: 'Digital Libraries',
+    type: 'external-library',
+    contentUrl: 'https://archive.org/details/books',
+    duration: 'Millions of Books',
+  },
+  {
+    id: 'FOL003',
+    title: 'Open Library',
+    description: 'An open, editable library catalog, building towards a web page for every book ever published. Access to many scanned and digital books.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'open source books',
+    category: 'Digital Libraries',
+    type: 'external-library',
+    contentUrl: 'https://openlibrary.org/',
+    duration: 'Growing Catalog',
+  },
+  {
+    id: 'FOL004',
+    title: 'Directory of Open Access Journals (DOAJ)',
+    description: 'A community-curated online directory that indexes and provides access to high quality, open access, peer-reviewed journals.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    'data-ai-hint': 'journals academic',
+    category: 'Academic Resources',
+    type: 'external-library',
+    contentUrl: 'https://www.doaj.org/',
+    duration: 'Scholarly Articles',
+  },
+];

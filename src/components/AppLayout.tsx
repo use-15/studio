@@ -17,7 +17,8 @@ import {
   Sun,
   Moon,
   Laptop,
-  Hospital, // Added Hospital icon
+  Hospital,
+  BookMarked, // Added BookMarked icon
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -40,8 +41,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/wellness-library', label: 'Wellness Library', icon: LibraryBig },
+  { href: '/free-online-library', label: 'Free Online Library', icon: BookMarked }, // Added Free Online Library
   { href: '/my-boards', label: 'Health Dashboard', icon: KanbanSquare },
-  { href: '/hospitals', label: 'Hospitals', icon: Hospital }, // Added Hospitals link
+  { href: '/hospitals', label: 'Hospitals', icon: Hospital },
   { href: '/audio-summaries', label: 'Audio Summaries', icon: Headphones },
   { href: '/chatbot', label: 'AI Chatbot', icon: MessageCircle },
 ];
