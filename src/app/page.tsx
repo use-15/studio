@@ -1,14 +1,15 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import AppLayout from '@/components/AppLayout';
 import ResourceCard from '@/components/ResourceCard';
 import { curatedWellnessResources } from '@/lib/placeholder-data';
 import type { WellnessResource } from '@/types';
 import { getPersonalizedRecommendations } from '@/ai/flows/personalized-recommendations';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, BookOpen, UserCheck, Box } from 'lucide-react'; 
+import { Input } from '@/components/ui/input';
+import { ArrowRight, Sparkles, BookOpen, UserCheck, Box, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,32 +17,43 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export default function LandingPage() {
   const [personalizedRecs, setPersonalizedRecs] = useState<WellnessResource[]>([]);
   const [isLoadingRecs, setIsLoadingRecs] = useState(true);
+  const [userInterestQuery, setUserInterestQuery] = useState('');
+
+  const fetchRecommendations = async (query?: string) => {
+    setIsLoadingRecs(true);
+    try {
+      let activityPrompt = "User is interested in mindfulness, healthy eating, and light yoga. Prefers short articles and guided meditations.";
+      if (query && query.trim() !== '') {
+        activityPrompt = `User is specifically interested in: ${query}. Please provide wellness resources related to these topics.`;
+      }
+      
+      const result = await getPersonalizedRecommendations({ userActivity: activityPrompt });
+      
+      const mappedRecs: WellnessResource[] = result.recommendations.slice(0, 3).map((recText, index) => ({
+        id: `PR${index + 1}-${query || 'initial'}`, // Ensure unique IDs
+        title: recText.length > 60 ? recText.substring(0, 57) + "..." : recText,
+        description: recText,
+        imageUrl: `https://placehold.co/600x400.png`,
+        category: 'Personalized',
+        type: 'tip',
+        'data-ai-hint': 'wellness abstract'
+      }));
+      setPersonalizedRecs(mappedRecs);
+    } catch (error) {
+      console.error("Failed to fetch personalized recommendations:", error);
+      setPersonalizedRecs([]); // Clear recommendations on error
+    }
+    setIsLoadingRecs(false);
+  };
 
   useEffect(() => {
-    async function fetchRecommendations() {
-      setIsLoadingRecs(true);
-      try {
-        // In a real app, userActivity would be dynamically determined
-        const userActivity = "User is interested in mindfulness, healthy eating, and light yoga. Prefers short articles and guided meditations.";
-        const result = await getPersonalizedRecommendations({ userActivity });
-        
-        const mappedRecs: WellnessResource[] = result.recommendations.slice(0, 3).map((recText, index) => ({
-          id: `PR${index + 1}`,
-          title: recText.length > 60 ? recText.substring(0, 57) + "..." : recText, // Simple title generation
-          description: recText,
-          imageUrl: `https://placehold.co/600x400.png`, 
-          category: 'Personalized',
-          type: 'tip', 
-          'data-ai-hint': 'wellness abstract' 
-        }));
-        setPersonalizedRecs(mappedRecs);
-      } catch (error) {
-        console.error("Failed to fetch personalized recommendations:", error);
-      }
-      setIsLoadingRecs(false);
-    }
-    fetchRecommendations();
+    fetchRecommendations(); // Fetch initial recommendations
   }, []);
+
+  const handleGetInterestRecommendations = (e: FormEvent) => {
+    e.preventDefault();
+    fetchRecommendations(userInterestQuery);
+  };
 
   return (
     <AppLayout>
@@ -52,8 +64,7 @@ export default function LandingPage() {
              <Image src="https://placehold.co/1600x900.png" alt="Background image of people gathering" layout="fill" objectFit="cover" data-ai-hint="people gathering" priority />
           </div>
           <div className="relative z-10 container mx-auto px-4">
-            {/* <Sparkles className="h-12 w-12 text-accent mx-auto mb-4" /> Removed Sparkles icon */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-primary mb-6 pt-8"> {/* Added pt-8 for spacing if needed */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-headline text-primary mb-6 pt-8">
               Welcome to Aramiyot Wellness Hub
             </h1>
             <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-3xl mx-auto">
@@ -78,12 +89,28 @@ export default function LandingPage() {
         <section className="container mx-auto px-4">
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline text-primary mb-3">Tailored Just For You</h2>
-            <p className="text-md md:text-lg text-muted-foreground max-w-xl mx-auto">AI-powered suggestions to guide your wellness journey.</p>
+            <p className="text-md md:text-lg text-muted-foreground max-w-xl mx-auto">AI-powered suggestions to guide your wellness journey. Tell us what you're interested in!</p>
           </div>
+          
+          <form onSubmit={handleGetInterestRecommendations} className="max-w-xl mx-auto mb-8 flex gap-2">
+            <Input
+              type="text"
+              value={userInterestQuery}
+              onChange={(e) => setUserInterestQuery(e.target.value)}
+              placeholder="e.g., stress relief, healthy recipes, sleep tips"
+              className="flex-grow"
+              aria-label="Your wellness interests"
+            />
+            <Button type="submit" disabled={isLoadingRecs}>
+              <Search className="mr-2 h-4 w-4" />
+              {isLoadingRecs && userInterestQuery ? 'Fetching...' : 'Get My Recommendations'}
+            </Button>
+          </form>
+
           {isLoadingRecs ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
-                <Card key={i} className="animate-pulse">
+                <Card key={`pulse-${i}`} className="animate-pulse">
                   <div className="h-48 bg-muted rounded-t-lg"></div>
                   <CardHeader>
                     <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
@@ -104,8 +131,8 @@ export default function LandingPage() {
           ) : (
              <Card className="text-center p-8">
                 <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <CardTitle className="text-xl font-semibold mb-2">Discover Your Path</CardTitle>
-                <p className="text-muted-foreground mb-4">Explore our library to receive personalized recommendations.</p>
+                <CardTitle className="text-xl font-semibold mb-2">No Recommendations Found</CardTitle>
+                <p className="text-muted-foreground mb-4">We couldn't find specific recommendations for that. Try different keywords or explore our library!</p>
                 <Button asChild variant="secondary">
                   <Link href="/wellness-library">Browse Library</Link>
                 </Button>
@@ -173,3 +200,4 @@ export default function LandingPage() {
   );
 }
 
+    
