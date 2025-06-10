@@ -1,17 +1,20 @@
+
 'use server';
 
 /**
  * @fileOverview A health inquiry AI chatbot.
  *
- * - aiHealthChatbot - A function that handles health inquiries.
+ * - aiHealthChatbot - A function that handles health inquiries (non-streaming).
  * - AIHealthChatbotInput - The input type for the aiHealthChatbot function.
  * - AIHealthChatbotOutput - The return type for the aiHealthChatbot function.
+ * - aiHealthChatbotPrompt - The Genkit prompt for health inquiries, usable for streaming.
+ * - AIHealthChatbotInputSchema - Zod schema for input.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const AIHealthChatbotInputSchema = z.object({
+export const AIHealthChatbotInputSchema = z.object({
   inquiry: z.string().describe('The health inquiry from the user.'),
 });
 export type AIHealthChatbotInput = z.infer<typeof AIHealthChatbotInputSchema>;
@@ -21,11 +24,13 @@ const AIHealthChatbotOutputSchema = z.object({
 });
 export type AIHealthChatbotOutput = z.infer<typeof AIHealthChatbotOutputSchema>;
 
+// Existing non-streaming function
 export async function aiHealthChatbot(input: AIHealthChatbotInput): Promise<AIHealthChatbotOutput> {
   return aiHealthChatbotFlow(input);
 }
 
-const prompt = ai.definePrompt({
+// Export the prompt so it can be used by the streaming API route
+export const aiHealthChatbotPrompt = ai.definePrompt({
   name: 'aiHealthChatbotPrompt',
   input: {schema: AIHealthChatbotInputSchema},
   output: {schema: AIHealthChatbotOutputSchema},
@@ -39,7 +44,7 @@ const aiHealthChatbotFlow = ai.defineFlow(
     outputSchema: AIHealthChatbotOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await aiHealthChatbotPrompt(input);
     return output!;
   }
 );
