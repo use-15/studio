@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -23,11 +23,15 @@ import {
   Stethoscope,
   Pill,
   PlusCircle,
-  ListChecks, // Added for To-Do List
-  Trash2 // Added for To-Do List
+  ListChecks,
+  Trash2,
+  Loader2
 } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday, getDate } from 'date-fns';
 import Image from 'next/image';
+import { useAuthContext } from '@/components/AppProviders';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, Timestamp } from 'firebase/firestore';
 
 const healthChartData = [
   { name: '2016', myData: 65, average: 60 },
@@ -99,68 +103,84 @@ interface TodoItem {
   id: string;
   text: string;
   completed: boolean;
-  createdAt: string; // Store as ISO string for localStorage
+  createdAt: Timestamp; 
 }
 
-const LOCAL_STORAGE_KEY_TODOS = 'armiyot_dashboard_todos';
+const TODOS_COLLECTION = 'userTodos'; // Subcollection for todos under each user
 
 export default function DashboardPage() {
+  const { userId, loadingAuth } = useAuthContext();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [chartTimeRange, setChartTimeRange] = useState<'D' | 'W' | 'M' | 'Y'>('Y');
 
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [newTodoText, setNewTodoText] = useState('');
+  const [loadingTodos, setLoadingTodos] = useState(true);
 
-  // Load todos from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedTodos = localStorage.getItem(LOCAL_STORAGE_KEY_TODOS);
-        if (storedTodos) {
-          setTodos(JSON.parse(storedTodos));
-        }
-      } catch (error) {
-        console.error("Failed to load todos from localStorage:", error);
-      }
+    if (loadingAuth || !userId) {
+      if(!loadingAuth && !userId) setLoadingTodos(false); // Auth finished, no user
+      return;
     }
-  }, []);
 
-  // Save todos to localStorage when they change
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY_TODOS, JSON.stringify(todos));
-      } catch (error) {
-        console.error("Failed to save todos to localStorage:", error);
-      }
-    }
-  }, [todos]);
+    setLoadingTodos(true);
+    const userTodosCollectionRef = collection(db, TODOS_COLLECTION, userId, 'todos');
+    const q = query(userTodosCollectionRef, orderBy('createdAt', 'desc'));
 
-  const handleAddTodo = (e: React.FormEvent) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedTodos = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      } as TodoItem));
+      setTodos(fetchedTodos);
+      setLoadingTodos(false);
+    }, (error) => {
+      console.error("Failed to load todos from Firestore:", error);
+      setLoadingTodos(false);
+    });
+
+    return () => unsubscribe();
+  }, [userId, loadingAuth]);
+
+  const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newTodoText.trim() === '') return;
-    const newTodo: TodoItem = {
-      id: Date.now().toString(),
+    if (newTodoText.trim() === '' || !userId) return;
+    const newTodo = {
       text: newTodoText.trim(),
       completed: false,
-      createdAt: new Date().toISOString(),
+      createdAt: Timestamp.now(),
     };
-    setTodos(prevTodos => [...prevTodos, newTodo]);
-    setNewTodoText('');
+    try {
+      const userTodosCollectionRef = collection(db, TODOS_COLLECTION, userId, 'todos');
+      await addDoc(userTodosCollectionRef, newTodo);
+      setNewTodoText('');
+    } catch (error) {
+      console.error("Error adding todo to Firestore:", error);
+    }
   };
 
-  const handleToggleTodo = (id: string) => {
-    setTodos(prevTodos =>
-      prevTodos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const handleToggleTodo = async (id: string) => {
+    if (!userId) return;
+    const todoToUpdate = todos.find(todo => todo.id === id);
+    if (!todoToUpdate) return;
+
+    const todoDocRef = doc(db, TODOS_COLLECTION, userId, 'todos', id);
+    try {
+      await updateDoc(todoDocRef, { completed: !todoToUpdate.completed });
+    } catch (error) {
+      console.error("Error updating todo in Firestore:", error);
+    }
   };
 
-  const handleDeleteTodo = (id: string) => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+  const handleDeleteTodo = async (id: string) => {
+    if (!userId) return;
+    const todoDocRef = doc(db, TODOS_COLLECTION, userId, 'todos', id);
+    try {
+      await deleteDoc(todoDocRef);
+    } catch (error) {
+      console.error("Error deleting todo from Firestore:", error);
+    }
   };
-
 
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -262,9 +282,11 @@ export default function DashboardPage() {
           <CardTitle className="text-lg font-headline flex items-center">
             <ListChecks className="mr-2 h-5 w-5 text-primary" /> To-Do List
           </CardTitle>
-          <Badge variant={todos.filter(t => !t.completed).length > 0 ? "destructive" : "default"}>
-            {todos.filter(t => !t.completed).length} pending
-          </Badge>
+          {!loadingTodos && (
+            <Badge variant={todos.filter(t => !t.completed).length > 0 ? "destructive" : "default"}>
+              {todos.filter(t => !t.completed).length} pending
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -275,48 +297,58 @@ export default function DashboardPage() {
             onChange={(e) => setNewTodoText(e.target.value)}
             placeholder="Add a new task..."
             className="flex-grow"
+            disabled={loadingAuth || !userId}
           />
-          <Button type="submit" size="icon">
+          <Button type="submit" size="icon" disabled={loadingAuth || !userId || newTodoText.trim() === ''}>
             <PlusCircle className="h-5 w-5" />
           </Button>
         </form>
-        <ScrollArea className="h-[200px] pr-3">
-          {todos.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">No tasks yet. Add some!</p>
-          )}
-          <div className="space-y-2">
-            {todos.map((todo) => (
-              <div
-                key={todo.id}
-                className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors"
-              >
-                <Checkbox
-                  id={`todo-${todo.id}`}
-                  checked={todo.completed}
-                  onCheckedChange={() => handleToggleTodo(todo.id)}
-                  aria-label={todo.text}
-                />
-                <label
-                  htmlFor={`todo-${todo.id}`}
-                  className={`flex-grow text-sm cursor-pointer ${
-                    todo.completed ? 'line-through text-muted-foreground' : ''
-                  }`}
-                >
-                  {todo.text}
-                </label>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                  onClick={() => handleDeleteTodo(todo.id)}
-                  aria-label="Delete task"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+        {loadingAuth || loadingTodos ? (
+          <div className="flex justify-center items-center py-4">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Loading tasks...</span>
           </div>
-        </ScrollArea>
+        ) : (
+          <ScrollArea className="h-[200px] pr-3">
+            {todos.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">No tasks yet. Add some!</p>
+            )}
+            <div className="space-y-2">
+              {todos.map((todo) => (
+                <div
+                  key={todo.id}
+                  className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors"
+                >
+                  <Checkbox
+                    id={`todo-${todo.id}`}
+                    checked={todo.completed}
+                    onCheckedChange={() => handleToggleTodo(todo.id)}
+                    aria-label={todo.text}
+                    disabled={!userId}
+                  />
+                  <label
+                    htmlFor={`todo-${todo.id}`}
+                    className={`flex-grow text-sm cursor-pointer ${
+                      todo.completed ? 'line-through text-muted-foreground' : ''
+                    }`}
+                  >
+                    {todo.text}
+                  </label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleDeleteTodo(todo.id)}
+                    aria-label="Delete task"
+                    disabled={!userId}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </CardContent>
     </Card>
   );
@@ -489,4 +521,3 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
-
