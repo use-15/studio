@@ -4,6 +4,15 @@ import {aiHealthChatbotPrompt, AIHealthChatbotInputSchema} from '@/ai/flows/ai-h
 import {NextResponse} from 'next/server';
 import {z} from 'zod';
 
+// Configure the body parser to allow larger request bodies (e.g., for image uploads)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb', // Increase limit to 10MB
+    },
+  },
+};
+
 export const dynamic = 'force-dynamic'; // Ensure dynamic execution for streaming
 
 export async function POST(request: Request) {
@@ -54,14 +63,36 @@ export async function POST(request: Request) {
       },
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in AI chat stream API:', error);
-    let errorMessage = 'An unexpected error occurred.';
+    
+    let errorTitle = 'Failed to process chat stream';
+    let errorDetails = 'An unexpected error occurred. Please try again.';
+
     if (error instanceof z.ZodError) {
-        errorMessage = 'Invalid request payload.';
+      errorTitle = 'Invalid Input';
+      errorDetails = 'There was an issue with the data provided: ' + JSON.stringify(error.flatten());
     } else if (error instanceof Error) {
-        errorMessage = error.message;
+      // If error.message is blank or too generic, keep the default "An unexpected error..."
+      if (error.message && error.message.toLowerCase() !== 'unknown error occurred' && error.message.trim() !== '') {
+        errorDetails = error.message;
+      }
+      // Log stack for server-side debugging
+      if (process.env.NODE_ENV === 'development' && error.stack) {
+        console.error('Error Stack:', error.stack);
+      }
+    } else if (typeof error === 'string') {
+      errorDetails = error;
+    } else if (typeof error === 'object' && error !== null) {
+        if ('toString' in error) {
+            const errStr = error.toString();
+            if (errStr !== '[object Object]') { // Avoid generic [object Object]
+                 errorDetails = errStr;
+            }
+        }
     }
-    return NextResponse.json({error: 'Failed to process chat stream', details: errorMessage}, {status: 500});
+    
+    return NextResponse.json({ error: errorTitle, details: errorDetails }, { status: 500 });
   }
 }
+
