@@ -1,20 +1,22 @@
+
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApp, getApps } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// IMPORTANT: Replace with your actual Firebase project configuration
+// IMPORTANT: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", // REPLACE ME
-  authDomain: "YOUR_AUTH_DOMAIN", // REPLACE ME
-  projectId: "YOUR_PROJECT_ID", // REPLACE ME
-  storageBucket: "YOUR_STORAGE_BUCKET", // REPLACE ME
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // REPLACE ME
-  appId: "YOUR_APP_ID", // REPLACE ME
-  measurementId: "YOUR_MEASUREMENT_ID" // REPLACE ME (Optional)
+  apiKey: "YOUR_API_KEY", // Replace with your actual API key
+  authDomain: "YOUR_AUTH_DOMAIN", // Replace with your actual auth domain
+  projectId: "YOUR_PROJECT_ID", // Replace with your actual project ID
+  storageBucket: "YOUR_STORAGE_BUCKET", // Replace with your actual storage bucket
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your actual messaging sender ID
+  appId: "YOUR_APP_ID", // Replace with your actual app ID
+  measurementId: "YOUR_MEASUREMENT_ID" // Optional: Replace with your actual measurement ID
 };
 
 // Initialize Firebase
@@ -28,14 +30,4 @@ if (!getApps().length) {
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Initialize Analytics only if supported (to prevent errors in environments where it's not)
-let analytics;
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-    }
-  });
-}
-
-export { app, auth, db, analytics };
+export { app, auth, db };
